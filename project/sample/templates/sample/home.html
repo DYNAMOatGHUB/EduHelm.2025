@@ -1,0 +1,164 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard | EduHelm</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root {
+    --bg-color: #f7f9fc;
+    --card-bg: #ffffff;
+    --sidebar-bg: #e0e2e5;
+    --text-color: #1a1a1a;
+    --subtle-text: #606060;
+    --primary-color: #4CAF50;
+    --accent-color: #007bff;
+    --danger-color: #dc3545;
+    --border-radius: 12px;
+    --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    --box-inset-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+* { box-sizing:border-box; margin:0; padding:0; font-family:'Inter', 'Segoe UI', 'Roboto', sans-serif; -webkit-font-smoothing: antialiased;}
+body { display:flex; background-color:var(--bg-color); color:var(--text-color); min-height:100vh; }
+
+/* Sidebar */
+.sidebar { width:280px; background-color:var(--sidebar-bg); box-shadow:var(--shadow); border-right:1px solid rgba(0,0,0,0.05); display:flex; flex-direction:column; height:100vh; position:sticky; top:0; padding:30px 20px; }
+.logo { font-size:2em; font-weight:700; color:var(--accent-color); margin-bottom:40px; padding-left:10px; }
+
+nav a { display:flex; align-items:center; padding:12px 10px; margin-bottom:5px; text-decoration:none; color:var(--subtle-text); transition:all 0.2s; border-radius:8px; font-size:1.1em;}
+nav a i { margin-right:15px; font-size:1.3em; width:25px; text-align:center; color:var(--primary-color);}
+nav a:hover, nav a.active { color:var(--text-color); background-color:var(--card-bg); box-shadow:var(--shadow); font-weight:600; }
+
+.auth-links { padding-top:15px; border-top:1px solid rgba(0,0,0,0.1); margin-top:15px; }
+.logout-form button { all: unset; display:flex; align-items:center; width:100%; padding:12px 10px; color:var(--subtle-text); border-radius:8px; font-size:1.1em; cursor:pointer; transition:all 0.2s; }
+.logout-form button:hover { color:var(--text-color); background-color:rgba(0,0,0,0.05);}
+.logout-form button i { margin-right:15px; font-size:1.3em; width:25px; text-align:center; color:var(--primary-color);}
+
+/* Main Content */
+.main-content { flex-grow:1; padding:40px; }
+.header { font-size:1.8em; font-weight:600; margin-bottom:10px;}
+.subheader { color:var(--subtle-text); font-size:1em; margin-bottom:20px; }
+
+/* Cards */
+.card { background-color:var(--card-bg); border-radius:var(--border-radius); box-shadow:var(--shadow); padding:25px; border:1px solid rgba(0,0,0,0.05); margin-bottom:25px; transition: transform 0.2s; }
+.card:hover { transform:translateY(-3px); }
+.card h3 { font-size:1.3em; margin-bottom:10px; display:flex; align-items:center; gap:8px;}
+.card h3 i { color:var(--primary-color); }
+
+/* Dashboard Grid */
+.dashboard-grid { display:grid; grid-template-columns:2fr 1fr; gap:30px; }
+
+/* AI Section */
+.ai-section input { width:100%; padding:12px; border-radius:8px; border:1px solid rgba(0,0,0,0.1); margin-top:10px; font-size:1em; outline:none;}
+.ai-section button { background-color:var(--primary-color); color:var(--card-bg); border:none; padding:10px 18px; border-radius:8px; cursor:pointer; font-weight:600; margin-top:10px; transition:0.2s;}
+.ai-section button:hover { background-color:#3d9b42; }
+
+/* Quick Actions */
+.quick-btn { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background-color:var(--bg-color); border:1px solid rgba(0,0,0,0.05); border-radius:10px; cursor:pointer; transition: all 0.2s ease; margin-bottom:12px; font-weight:500; }
+.quick-btn:hover { background-color:var(--primary-color); color:var(--card-bg); transform:translateY(-2px);}
+.quick-btn i { color:var(--primary-color); transition:color 0.2s; }
+.quick-btn:hover i { color:var(--card-bg); }
+
+/* Schedule */
+.schedule-list { list-style:none; margin-top:10px; }
+.schedule-list li { background:#f1f3f5; padding:10px 12px; border-radius:8px; margin-bottom:8px; font-size:0.95em; }
+
+/* Progress Bar */
+.progress-bar { background:#e6edf7; border-radius:8px; height:10px; overflow:hidden; margin-top:8px; }
+.progress-bar div { background:var(--primary-color); height:100%; width:70%; border-radius:8px; }
+.streak { color:var(--subtle-text); font-size:0.9rem; margin-top:6px; }
+</style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo">EduHelm.</div>
+    <nav class="primary-nav">
+        <a href="{% url 'sample_home' %}" class="active"><i class="fas fa-home"></i> Dashboard</a>
+        <a href="{% url 'course_list' %}"><i class="fas fa-book"></i> Courses</a>
+        <a href="{% url 'my_courses' %}"><i class="fas fa-graduation-cap"></i> My Courses</a>
+        <a href="{% url 'study_dashboard' %}"><i class="fas fa-clock"></i> Study Tracker</a>
+        <a href="{% url 'study_analytics' %}"><i class="fas fa-chart-line"></i> Analytics</a>
+        <a href="{% url 'notes_list' %}"><i class="fas fa-sticky-note"></i> My Notes</a>
+        <a href="{% url 'resources_library' %}"><i class="fas fa-folder-open"></i> Resources</a>
+        <a href="{% url 'profile' %}"><i class="fas fa-user-circle"></i> Profile</a>
+    </nav>
+
+    <!-- Add this wrapper to push auth links to bottom -->
+    <div style="margin-top:auto;">
+        <div class="auth-links">
+            {% if user.is_authenticated %}
+                <form class="logout-form" method="POST" action="{% url 'logout' %}?next={% url 'logout_confirm' %}">
+                    {% csrf_token %}
+                    <button type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'register' %}" style="display:block; margin-bottom:10px;"><i class="fas fa-user-plus"></i> Register</a>
+                <a href="{% url 'login' %}" style="display:block;"><i class="fas fa-sign-in-alt"></i> Login</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+
+<div class="main-content">
+    <div>
+        <h1 class="header">Welcome back, {{ user.username|default:"Learner" }} 👋</h1>
+        <p class="subheader">Here’s your daily study overview and AI recommendations.</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <div>
+            <div class="card ai-section">
+                <h3><i class="fas fa-robot"></i> EduHelm AI Assistant</h3>
+                <p>Ask AI for a study plan or help understanding a topic:</p>
+                <input type="text" placeholder="e.g., Plan my Django revision session">
+                <button><i class="fas fa-paper-plane"></i> Ask AI</button>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-bell"></i> Reminder</h3>
+                <p><strong>Frontend Layout Task</strong> - Due in 2 hours</p>
+                <p style="color: var(--subtle-text); font-size:0.9em;">Don’t forget to finalize the CSS grid section.</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-calendar-alt"></i> Today’s Schedule</h3>
+                <ul class="schedule-list">
+                    <li>9:00 AM - Data Structures Revision</li>
+                    <li>11:00 AM - Django Project Work</li>
+                    <li>3:00 PM - Break / Relax</li>
+                    <li>5:00 PM - React Practice</li>
+                </ul>
+            </div>
+        </div>
+
+        <div>
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> Progress</h3>
+                <p>Weekly Study Completion:</p>
+                <div class="progress-bar"><div></div></div>
+                <p class="streak">🔥 8 Day Streak</p>
+            </div>
+
+            <div class="card">
+                <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+                <a href="{% url 'study_dashboard' %}" style="text-decoration: none;">
+                    <button class="quick-btn"><span><i class="fas fa-play-circle"></i> Start Study Session</span></button>
+                </a>
+                <a href="{% url 'note_create' %}" style="text-decoration: none;">
+                    <button class="quick-btn"><span><i class="fas fa-sticky-note"></i> Create New Note</span></button>
+                </a>
+                <a href="{% url 'resource_upload' %}" style="text-decoration: none;">
+                    <button class="quick-btn"><span><i class="fas fa-upload"></i> Upload Resource</span></button>
+                </a>
+                <a href="{% url 'course_list' %}" style="text-decoration: none;">
+                    <button class="quick-btn"><span><i class="fas fa-search"></i> Browse Courses</span></button>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

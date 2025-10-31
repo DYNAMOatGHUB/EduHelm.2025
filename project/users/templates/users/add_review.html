@@ -1,0 +1,384 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Review | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --star-color: #ffc107;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
+        
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .target-info {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 5px solid var(--accent-color);
+        }
+        
+        .target-type {
+            font-size: 0.85em;
+            color: var(--subtle-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .target-title {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .target-meta {
+            color: var(--subtle-text);
+            font-size: 0.9em;
+        }
+        
+        .form-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 40px;
+        }
+        
+        .form-group {
+            margin-bottom: 35px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.05em;
+        }
+        
+        .star-rating {
+            display: flex;
+            gap: 10px;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            font-size: 2.5em;
+        }
+        
+        .star-rating input {
+            display: none;
+        }
+        
+        .star-rating label {
+            cursor: pointer;
+            color: var(--border-color);
+            transition: all 0.2s;
+            margin: 0;
+        }
+        
+        .star-rating label:hover,
+        .star-rating label:hover ~ label,
+        .star-rating input:checked ~ label {
+            color: var(--star-color);
+        }
+        
+        .star-rating label:hover {
+            transform: scale(1.1);
+        }
+        
+        .rating-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            font-size: 0.85em;
+            color: var(--subtle-text);
+        }
+        
+        .form-group textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            min-height: 200px;
+            resize: vertical;
+        }
+        
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .hint-text {
+            font-size: 0.85em;
+            color: var(--subtle-text);
+            margin-top: 10px;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+            margin-top: 40px;
+        }
+        
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .btn-secondary {
+            background: var(--bg-color);
+            color: var(--text-color);
+            border: 2px solid var(--border-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+        
+        .messages {
+            margin-bottom: 25px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .errorlist {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            list-style: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% if target_type == 'note' %}
+            <a href="{% url 'note_detail' target.id %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Note
+            </a>
+        {% else %}
+            <a href="{% url 'resource_view' target.id %}" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Resource
+            </a>
+        {% endif %}
+        
+        <div class="header">
+            <h1>
+                <i class="fas fa-star"></i>
+                Add Peer Review
+            </h1>
+            <p style="color: var(--subtle-text);">Share your feedback with the community</p>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'danger' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="target-info">
+            <div class="target-type">
+                {% if target_type == 'note' %}
+                    <i class="fas fa-sticky-note"></i> Study Note
+                {% else %}
+                    <i class="fas fa-file-alt"></i> Shared Resource
+                {% endif %}
+            </div>
+            <div class="target-title">{{ target.title }}</div>
+            <div class="target-meta">
+                <i class="fas fa-user"></i> Created by {{ target.user.username }}
+                {% if target_type == 'note' and target.category %}
+                    <span style="margin-left: 20px;">
+                        <i class="fas fa-tag"></i> {{ target.category.name }}
+                    </span>
+                {% elif target_type == 'resource' and target.resource_type %}
+                    <span style="margin-left: 20px;">
+                        <i class="fas fa-file"></i> {{ target.get_resource_type_display }}
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-card">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label>
+                        <i class="fas fa-star"></i> Your Rating *
+                    </label>
+                    
+                    <div class="star-rating">
+                        <input type="radio" name="rating" value="5" id="star5" required>
+                        <label for="star5"><i class="fas fa-star"></i></label>
+                        
+                        <input type="radio" name="rating" value="4" id="star4">
+                        <label for="star4"><i class="fas fa-star"></i></label>
+                        
+                        <input type="radio" name="rating" value="3" id="star3">
+                        <label for="star3"><i class="fas fa-star"></i></label>
+                        
+                        <input type="radio" name="rating" value="2" id="star2">
+                        <label for="star2"><i class="fas fa-star"></i></label>
+                        
+                        <input type="radio" name="rating" value="1" id="star1">
+                        <label for="star1"><i class="fas fa-star"></i></label>
+                    </div>
+                    
+                    <div class="rating-labels">
+                        <span>⭐ Poor</span>
+                        <span>⭐⭐ Fair</span>
+                        <span>⭐⭐⭐ Good</span>
+                        <span>⭐⭐⭐⭐ Very Good</span>
+                        <span>⭐⭐⭐⭐⭐ Excellent</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_feedback">
+                        <i class="fas fa-comment-alt"></i> Your Feedback *
+                    </label>
+                    <textarea name="feedback" 
+                              id="id_feedback" 
+                              required 
+                              placeholder="Share your detailed feedback...&#10;&#10;What did you find helpful?&#10;What could be improved?&#10;How has this helped your learning?"></textarea>
+                    <div class="hint-text">
+                        Be constructive and specific. Your feedback helps improve the quality of shared content.
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    {% if target_type == 'note' %}
+                        <a href="{% url 'note_detail' target.id %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    {% else %}
+                        <a href="{% url 'resource_view' target.id %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    {% endif %}
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Submit Review
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Add visual feedback for rating selection
+        const stars = document.querySelectorAll('.star-rating label');
+        const ratingInputs = document.querySelectorAll('.star-rating input');
+        
+        // Show selected rating on page load if form has errors
+        ratingInputs.forEach(input => {
+            if (input.checked) {
+                updateStarDisplay(input.value);
+            }
+        });
+        
+        function updateStarDisplay(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.style.color = 'var(--star-color)';
+                } else {
+                    star.style.color = 'var(--border-color)';
+                }
+            });
+        }
+        
+        // Update display when rating changes
+        ratingInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                updateStarDisplay(this.value);
+            });
+        });
+    </script>
+</body>
+</html>

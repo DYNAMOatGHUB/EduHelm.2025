@@ -1,0 +1,24 @@
+# VS Code Problem Matcher Exclusions for Django Project
+
+# Ignore CSS/JS validation errors in Django templates
+**/templates/**/*.html
+**/templates/**
+
+# Ignore Python cache and migrations
+**/__pycache__/**
+**/*.pyc
+**/*.pyo
+**/migrations/**
+
+# Ignore virtual environment
+**/.venv/**
+**/venv/**
+**/env/**
+
+# Ignore static/media files
+**/media/**
+**/staticfiles/**
+
+# Ignore database files
+*.sqlite3
+*.db

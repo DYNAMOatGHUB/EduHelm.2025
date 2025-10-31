@@ -1,0 +1,493 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ group.name }} | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --danger-color: #dc3545;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .group-header {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .group-cover {
+            height: 250px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+            color: white;
+        }
+        
+        .group-info {
+            padding: 30px;
+        }
+        
+        .group-title {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .group-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 20px;
+            color: var(--subtle-text);
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .group-badges {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .badge {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge-private {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-public {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-course {
+            background: var(--bg-color);
+            color: var(--accent-color);
+        }
+        
+        .group-description {
+            line-height: 1.8;
+            margin-bottom: 25px;
+            font-size: 1.05em;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .btn-accent {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-accent:hover {
+            background: #0056b3;
+        }
+        
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .content-layout {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+        
+        .main-content {
+            min-width: 0;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--bg-color);
+        }
+        
+        .card-header h2 {
+            font-size: 1.3em;
+        }
+        
+        .discussion-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+        }
+        
+        .discussion-item:last-child {
+            border-bottom: none;
+        }
+        
+        .discussion-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .discussion-title a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .discussion-title a:hover {
+            color: var(--primary-color);
+        }
+        
+        .discussion-meta {
+            font-size: 0.85em;
+            color: var(--subtle-text);
+            display: flex;
+            gap: 15px;
+        }
+        
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .member-item:hover {
+            background: var(--bg-color);
+        }
+        
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-weight: 600;
+        }
+        
+        .member-role {
+            font-size: 0.8em;
+            color: var(--subtle-text);
+        }
+        
+        .role-badge {
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: 600;
+        }
+        
+        .role-admin {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .role-moderator {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--subtle-text);
+        }
+        
+        .empty-state i {
+            font-size: 3em;
+            margin-bottom: 15px;
+            opacity: 0.3;
+        }
+        
+        .messages {
+            margin-bottom: 25px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        
+        @media (max-width: 1024px) {
+            .content-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'groups_list' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Groups
+        </a>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="group-header">
+            <div class="group-cover">
+                <i class="fas fa-users"></i>
+            </div>
+            
+            <div class="group-info">
+                <div class="group-badges">
+                    {% if group.is_private %}
+                        <span class="badge badge-private"><i class="fas fa-lock"></i> Private</span>
+                    {% else %}
+                        <span class="badge badge-public"><i class="fas fa-globe"></i> Public</span>
+                    {% endif %}
+                    {% if group.course %}
+                        <span class="badge badge-course">
+                            <i class="fas fa-book"></i> {{ group.course.title }}
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <h1 class="group-title">{{ group.name }}</h1>
+                
+                <div class="group-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-user"></i>
+                        Created by <strong>{{ group.creator.username }}</strong>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-users"></i>
+                        <strong>{{ group.member_count }}/{{ group.max_members }}</strong> members
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        {{ group.created_at|date:"F d, Y" }}
+                    </div>
+                </div>
+                
+                <div class="group-description">
+                    {{ group.description }}
+                </div>
+                
+                <div class="actions">
+                    {% if is_member %}
+                        <a href="{% url 'discussion_list' group.id %}" class="btn btn-accent">
+                            <i class="fas fa-comments"></i> Discussions
+                        </a>
+                        
+                        {% if not is_admin %}
+                            <form method="POST" action="{% url 'group_leave' group.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" 
+                                        onclick="return confirm('Are you sure you want to leave this group?')">
+                                    <i class="fas fa-sign-out-alt"></i> Leave Group
+                                </button>
+                            </form>
+                        {% endif %}
+                        
+                        {% if is_admin %}
+                            <form method="POST" action="{% url 'group_delete' group.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger" 
+                                        onclick="return confirm('Are you sure you want to delete this group? This action cannot be undone.')">
+                                    <i class="fas fa-trash"></i> Delete Group
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        {% if not group.is_full %}
+                            <a href="{% url 'group_join' group.id %}" class="btn btn-primary">
+                                <i class="fas fa-user-plus"></i> Join Group
+                            </a>
+                        {% else %}
+                            <button class="btn btn-danger" disabled>
+                                <i class="fas fa-ban"></i> Group Full
+                            </button>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-layout">
+            <div class="main-content">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-comments"></i>
+                        <h2>Recent Discussions</h2>
+                    </div>
+                    
+                    {% if discussions %}
+                        {% for discussion in discussions %}
+                            <div class="discussion-item">
+                                <div class="discussion-title">
+                                    <a href="{% url 'discussion_detail' discussion.id %}">
+                                        {% if discussion.is_pinned %}<i class="fas fa-thumbtack" style="color: var(--primary-color);"></i>{% endif %}
+                                        {{ discussion.title }}
+                                        {% if discussion.is_locked %}<i class="fas fa-lock" style="color: var(--subtle-text);"></i>{% endif %}
+                                    </a>
+                                </div>
+                                <div class="discussion-meta">
+                                    <span><i class="fas fa-user"></i> {{ discussion.author.username }}</span>
+                                    <span><i class="fas fa-reply"></i> {{ discussion.reply_count }} replies</span>
+                                    <span><i class="fas fa-clock"></i> {{ discussion.updated_at|timesince }} ago</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        
+                        {% if is_member %}
+                            <a href="{% url 'discussion_list' group.id %}" class="btn btn-accent" style="margin-top: 20px;">
+                                <i class="fas fa-list"></i> View All Discussions
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <div class="empty-state">
+                            <i class="fas fa-comments"></i>
+                            <p>No discussions yet.</p>
+                            {% if is_member %}
+                                <a href="{% url 'discussion_create' group.id %}" class="btn btn-primary" style="margin-top: 15px;">
+                                    <i class="fas fa-plus"></i> Start First Discussion
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="sidebar">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-users"></i>
+                        <h2>Members ({{ members.count }})</h2>
+                    </div>
+                    
+                    {% for membership in members %}
+                        <div class="member-item">
+                            <div class="member-avatar">
+                                {{ membership.user.username|first|upper }}
+                            </div>
+                            <div class="member-info">
+                                <div class="member-name">{{ membership.user.username }}</div>
+                                <div class="member-role">
+                                    {% if membership.role == 'admin' %}
+                                        <span class="role-badge role-admin">Admin</span>
+                                    {% elif membership.role == 'moderator' %}
+                                        <span class="role-badge role-moderator">Moderator</span>
+                                    {% else %}
+                                        Member
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

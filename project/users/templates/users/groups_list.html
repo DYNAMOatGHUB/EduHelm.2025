@@ -1,0 +1,521 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Groups | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .stats {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .stats-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .filters {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 40px 0 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .section-header h2 {
+            font-size: 1.8em;
+        }
+        
+        .section-header .count {
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .group-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .group-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .group-cover {
+            height: 150px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            color: white;
+        }
+        
+        .group-content {
+            padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .group-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .group-name a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .group-name a:hover {
+            color: var(--primary-color);
+        }
+        
+        .group-desc {
+            color: var(--subtle-text);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+        
+        .group-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.85em;
+            color: var(--subtle-text);
+            margin-bottom: 15px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .group-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .badge-private {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .badge-public {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-course {
+            background: var(--bg-color);
+            color: var(--accent-color);
+        }
+        
+        .group-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .group-actions a,
+        .group-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .btn-view {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #0056b3;
+        }
+        
+        .btn-join {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-join:hover {
+            background: #45a049;
+        }
+        
+        .no-groups {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .no-groups i {
+            font-size: 5em;
+            color: var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .messages {
+            margin-bottom: 25px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'sample_home' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <div class="header">
+            <h1>
+                <i class="fas fa-users"></i>
+                Study Groups
+            </h1>
+            <a href="{% url 'group_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Create Group
+            </a>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}info-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="stats">
+            <div class="stats-value">{{ total_groups }}</div>
+            <div style="color: var(--subtle-text);">Groups You've Joined</div>
+        </div>
+        
+        <div class="filters">
+            <form method="GET" style="display: flex; gap: 15px; flex: 1;">
+                <div class="filter-group">
+                    <label>Search</label>
+                    <input type="text" name="search" placeholder="Search groups..." value="{{ request.GET.search }}">
+                </div>
+                
+                <div class="filter-group">
+                    <label>Course</label>
+                    <select name="course">
+                        <option value="">All Courses</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}" {% if request.GET.course == course.id|stringformat:"s" %}selected{% endif %}>
+                                {{ course.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="align-self: flex-end;">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+            </form>
+        </div>
+        
+        <!-- My Groups Section -->
+        <div class="section-header">
+            <i class="fas fa-user-friends"></i>
+            <h2>My Groups</h2>
+            <span class="count">{{ my_groups.count }}</span>
+        </div>
+        
+        {% if my_groups %}
+            <div class="groups-grid">
+                {% for group in my_groups %}
+                    <div class="group-card">
+                        <div class="group-cover">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        
+                        <div class="group-content">
+                            <div class="group-badges">
+                                {% if group.is_private %}
+                                    <span class="badge badge-private"><i class="fas fa-lock"></i> Private</span>
+                                {% else %}
+                                    <span class="badge badge-public"><i class="fas fa-globe"></i> Public</span>
+                                {% endif %}
+                                {% if group.course %}
+                                    <span class="badge badge-course">
+                                        <i class="fas fa-book"></i> {{ group.course.title|truncatewords:3 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="group-name">
+                                <a href="{% url 'group_detail' group.id %}">{{ group.name }}</a>
+                            </div>
+                            
+                            <div class="group-desc">
+                                {{ group.description|truncatewords:20 }}
+                            </div>
+                            
+                            <div class="group-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user"></i>
+                                    {{ group.creator.username }}
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    {{ group.member_count }}/{{ group.max_members }} members
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ group.created_at|date:"M d, Y" }}
+                                </div>
+                            </div>
+                            
+                            <div class="group-actions">
+                                <a href="{% url 'group_detail' group.id %}" class="btn-view">
+                                    <i class="fas fa-eye"></i> View Group
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-groups" style="margin-bottom: 40px;">
+                <i class="fas fa-user-friends"></i>
+                <h2>You Haven't Joined Any Groups Yet</h2>
+                <p style="color: var(--subtle-text); margin-bottom: 25px;">Join a group below or create your own!</p>
+            </div>
+        {% endif %}
+        
+        <!-- Public Groups Section -->
+        <div class="section-header">
+            <i class="fas fa-globe"></i>
+            <h2>Discover Groups</h2>
+            <span class="count">{{ public_groups.count }}</span>
+        </div>
+        
+        {% if public_groups %}
+            <div class="groups-grid">
+                {% for group in public_groups %}
+                    <div class="group-card">
+                        <div class="group-cover">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        
+                        <div class="group-content">
+                            <div class="group-badges">
+                                <span class="badge badge-public"><i class="fas fa-globe"></i> Public</span>
+                                {% if group.course %}
+                                    <span class="badge badge-course">
+                                        <i class="fas fa-book"></i> {{ group.course.title|truncatewords:3 }}
+                                    </span>
+                                {% endif %}
+                                {% if group.is_full %}
+                                    <span class="badge" style="background: #f8d7da; color: #721c24;">
+                                        <i class="fas fa-ban"></i> Full
+                                    </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="group-name">
+                                <a href="{% url 'group_detail' group.id %}">{{ group.name }}</a>
+                            </div>
+                            
+                            <div class="group-desc">
+                                {{ group.description|truncatewords:20 }}
+                            </div>
+                            
+                            <div class="group-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-user"></i>
+                                    {{ group.creator.username }}
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-users"></i>
+                                    {{ group.member_count }}/{{ group.max_members }} members
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ group.created_at|date:"M d, Y" }}
+                                </div>
+                            </div>
+                            
+                            <div class="group-actions">
+                                <a href="{% url 'group_detail' group.id %}" class="btn-view">
+                                    <i class="fas fa-eye"></i> View
+                                </a>
+                                {% if not group.is_full %}
+                                    <a href="{% url 'group_join' group.id %}" class="btn-join">
+                                        <i class="fas fa-user-plus"></i> Join
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-groups">
+                <i class="fas fa-globe"></i>
+                <p style="color: var(--subtle-text);">No public groups available yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

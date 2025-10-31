@@ -1,0 +1,339 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --sidebar-bg: #eef1f6;
+            --text-color: #1a1a1a;
+            --subtle-text: #636b75;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --danger-color: #dc3545;
+            --border-color: rgba(0,0,0,0.08);
+            --shadow: 0 6px 20px rgba(15,23,42,0.08);
+            --radius: 16px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Inter, Segoe UI, sans-serif;
+        }
+        body {
+            display: flex;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-bg);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            padding: 32px 24px;
+        }
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 36px;
+        }
+        nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+            color: var(--subtle-text);
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+        nav a i {
+            width: 24px;
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+        nav a:hover, nav a.active {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+            font-weight: 500;
+        }
+        .auth-links {
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        .logout-form button, .auth-links a {
+            padding: 10px 12px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--subtle-text);
+            background: transparent;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logout-form button:hover, .auth-links a:hover {
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        .content-wrapper {
+            flex: 1;
+            padding: 48px;
+            overflow-y: auto;
+        }
+        .page-header {
+            margin-bottom: 32px;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .page-header p {
+            color: var(--subtle-text);
+        }
+        .edit-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border-radius: 10px;
+            margin-top: 16px;
+        }
+        .edit-link:hover {
+            background-color: var(--accent-color);
+            color: var(--card-bg);
+        }
+        .profile-card {
+            display: flex;
+            gap: 32px;
+            padding: 32px;
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 32px;
+        }
+        .avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid rgba(76, 175, 80, 0.25);
+            box-shadow: 0 10px 30px rgba(76, 175, 80, 0.18);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, rgba(76,175,80,0.18), rgba(0,123,255,0.18));
+            flex-shrink: 0;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar i {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+        .profile-meta {
+            flex: 1;
+        }
+        .profile-meta h2 {
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+        }
+        .profile-meta p {
+            color: var(--subtle-text);
+            margin-bottom: 4px;
+        }
+        .profile-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 18px;
+            flex-wrap: wrap;
+        }
+        .stat-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            background-color: rgba(76, 175, 80, 0.12);
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .panel {
+            background-color: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+        .panel h3 {
+            font-size: 1.2rem;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-color);
+        }
+        .panel h3 i {
+            color: var(--accent-color);
+        }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .metric:last-child {
+            border-bottom: none;
+        }
+        .metric span:first-child {
+            color: var(--subtle-text);
+        }
+        .metric span:last-child {
+            color: var(--text-color);
+            font-weight: 600;
+        }
+        .empty-state {
+            padding: 24px;
+            border-radius: 12px;
+            background-color: rgba(0,0,0,0.03);
+            color: var(--subtle-text);
+            text-align: center;
+            font-size: 0.95rem;
+        }
+        .session-list {
+            display: grid;
+            gap: 14px;
+        }
+        .session-item {
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            background-color: rgba(249,250,253,0.8);
+            transition: all 0.2s ease;
+        }
+        .session-item:hover {
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+            border-color: var(--accent-color);
+        }
+        .session-item h4 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+        .session-item p {
+            color: var(--subtle-text);
+            font-size: 0.9rem;
+        }
+        @media (max-width: 1080px) {
+            body { flex-direction: column; }
+            .sidebar { position: static; width: 100%; height: auto; padding: 20px; }
+            .content-wrapper { padding: 24px; }
+            .profile-card { flex-direction: column; align-items: center; text-align: center; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div>
+            <div class="logo">EduHelm.</div>
+            <nav>
+                <a href="{% url 'sample_home' %}"><i class="fas fa-home"></i> Dashboard</a>
+                <a href="{% url 'course_list' %}"><i class="fas fa-book"></i> Courses</a>
+                <a href="{% url 'study_dashboard' %}"><i class="fas fa-clock"></i> Study</a>
+                <a href="{% url 'profile' %}" class="active"><i class="fas fa-user"></i> Profile</a>
+            </nav>
+        </div>
+        <div class="auth-links">
+            {% if user.is_authenticated %}
+            <form method="POST" action="{% url 'logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content-wrapper">
+        <div class="page-header">
+            <h1>Hello, {{ user.username }}</h1>
+            <p>Keep track of your learning journey and personal details in one place.</p>
+            <a href="{% url 'profile_edit' %}" class="edit-link"><i class="fas fa-edit"></i> Edit Profile</a>
+        </div>
+        <div class="profile-card">
+            <div class="avatar">
+                {% if profile.image %}<img src="{{ profile.image.url }}" alt="Profile">
+                {% else %}<i class="fas fa-user-circle"></i>{% endif %}
+            </div>
+            <div class="profile-meta">
+                <h2>{{ user.get_full_name|default:user.username }}</h2>
+                <p><i class="fas fa-envelope"></i> {{ user.email }}</p>
+                <p><i class="fas fa-calendar"></i> Member since {{ user.date_joined|date:"F Y" }}</p>
+                <div class="profile-stats">
+                    <span class="stat-pill"><i class="fas fa-fire"></i> {{ profile.streak }} day streak</span>
+                    <span class="stat-pill"><i class="fas fa-clock"></i> {{ profile.total_study_time|floatformat:1 }} study hours</span>
+                    <span class="stat-pill"><i class="fas fa-trophy"></i> {{ badges_count }} badges</span>
+                </div>
+            </div>
+        </div>
+        <div class="grid">
+            <div class="panel">
+                <h3><i class="fas fa-chart-line"></i> Overview</h3>
+                <div class="metric"><span>Notes created</span><span>{{ notes_count }}</span></div>
+                <div class="metric"><span>Resources shared</span><span>{{ resources_count }}</span></div>
+                <div class="metric"><span>Groups joined</span><span>{{ groups_count }}</span></div>
+                <div class="metric"><span>Goals active</span><span>{{ goals_count }}</span></div>
+            </div>
+            <div class="panel">
+                <h3><i class="fas fa-history"></i> Recent Sessions</h3>
+                {% if recent_sessions %}
+                <div class="session-list">
+                    {% for session in recent_sessions %}
+                    <div class="session-item">
+                        <h4>{{ session.course.title|default:"General Study" }}</h4>
+                        <p>{{ session.duration }} minutes  {{ session.start_time|date:"M d, Y" }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="empty-state">No completed sessions yet. Start a study session to see progress here.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

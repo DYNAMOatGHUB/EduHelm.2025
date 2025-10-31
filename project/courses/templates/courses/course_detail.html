@@ -1,0 +1,415 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ course.title }} | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; }
+        
+        .container { max-width: 1000px; margin: 0 auto; padding: 30px; }
+        
+        .back-btn { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: var(--accent-color); 
+            text-decoration: none; 
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: gap 0.2s;
+        }
+        .back-btn:hover { gap: 12px; }
+        
+        .course-header {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .course-banner {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 5em;
+        }
+        
+        .course-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .course-info {
+            padding: 30px;
+        }
+        
+        .badges {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge-category { background: #e3f2fd; color: #1976d2; }
+        .badge-beginner { background: #e3f2fd; color: #1976d2; }
+        .badge-intermediate { background: #fff3e0; color: #f57c00; }
+        .badge-advanced { background: #fce4ec; color: #c2185b; }
+        
+        .course-title {
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .course-meta {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+            color: var(--subtle-text);
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .meta-item i {
+            color: var(--primary-color);
+        }
+        
+        .course-description {
+            line-height: 1.8;
+            color: var(--subtle-text);
+            margin-bottom: 20px;
+        }
+        
+        .enrollment-section {
+            background: var(--bg-color);
+            padding: 20px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .price {
+            font-size: 2em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .enroll-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+        }
+        
+        .enroll-btn:hover {
+            background: #45a049;
+        }
+        
+        .enroll-btn.enrolled {
+            background: var(--accent-color);
+        }
+        
+        .progress-section {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s;
+        }
+        
+        .lessons-section {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .lesson-list {
+            list-style: none;
+        }
+        
+        .lesson-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            transition: background 0.2s;
+        }
+        
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+        
+        .lesson-item:hover {
+            background: var(--bg-color);
+        }
+        
+        .lesson-number {
+            width: 40px;
+            height: 40px;
+            background: var(--bg-color);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 15px;
+            color: var(--primary-color);
+        }
+        
+        .lesson-info {
+            flex: 1;
+        }
+        
+        .lesson-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .lesson-title a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .lesson-title a:hover {
+            color: var(--primary-color);
+        }
+        
+        .lesson-duration {
+            color: var(--subtle-text);
+            font-size: 0.9em;
+        }
+        
+        .lesson-status {
+            color: var(--primary-color);
+        }
+        
+        .no-lessons {
+            text-align: center;
+            padding: 40px;
+            color: var(--subtle-text);
+        }
+        
+        .message {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .message.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'course_list' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Courses
+        </a>
+        
+        {% if messages %}
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <div class="course-header">
+            <div class="course-banner">
+                {% if course.thumbnail %}
+                    <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                {% else %}
+                    <i class="fas fa-book-open"></i>
+                {% endif %}
+            </div>
+            
+            <div class="course-info">
+                <div class="badges">
+                    <span class="badge badge-category">{{ course.get_category_display }}</span>
+                    <span class="badge badge-{{ course.difficulty }}">{{ course.get_difficulty_display }}</span>
+                </div>
+                
+                <h1 class="course-title">{{ course.title }}</h1>
+                
+                <div class="course-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-user"></i>
+                        <span>{{ course.instructor.get_full_name|default:course.instructor.username }}</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-book"></i>
+                        <span>{{ lessons.count }} Lessons</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-calendar"></i>
+                        <span>Updated {{ course.updated_at|date:"M d, Y" }}</span>
+                    </div>
+                </div>
+                
+                <div class="course-description">
+                    {{ course.description }}
+                </div>
+                
+                {% if enrollment %}
+                    <div class="enrollment-section">
+                        <div>
+                            <strong>You're enrolled!</strong>
+                            <p style="color: var(--subtle-text); margin-top: 5px;">Continue learning below</p>
+                        </div>
+                        <a href="{% url 'my_courses' %}" class="enroll-btn enrolled">
+                            <i class="fas fa-graduation-cap"></i> My Courses
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="enrollment-section">
+                        <div class="price">
+                            {% if course.is_free %}
+                                Free
+                            {% else %}
+                                ${{ course.price }}
+                            {% endif %}
+                        </div>
+                        <form method="POST" action="{% url 'enroll_course' course.slug %}">
+                            {% csrf_token %}
+                            <button type="submit" class="enroll-btn">
+                                <i class="fas fa-plus-circle"></i> Enroll Now
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if enrollment %}
+            <div class="progress-section">
+                <div class="progress-header">
+                    <h3>Your Progress</h3>
+                    <span><strong>{{ enrollment.progress_percentage }}%</strong> Complete</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ enrollment.progress_percentage }}%;"></div>
+                </div>
+            </div>
+        {% endif %}
+        
+        <div class="lessons-section">
+            <h2 class="section-title">
+                <i class="fas fa-list"></i> Course Curriculum
+            </h2>
+            
+            {% if lessons %}
+                <ul class="lesson-list">
+                    {% for lesson in lessons %}
+                        <li class="lesson-item">
+                            <div class="lesson-number">{{ lesson.order }}</div>
+                            <div class="lesson-info">
+                                <div class="lesson-title">
+                                    {% if enrollment %}
+                                        <a href="{% url 'lesson_view' course.slug lesson.id %}">
+                                            {{ lesson.title }}
+                                        </a>
+                                    {% else %}
+                                        {{ lesson.title }}
+                                        <i class="fas fa-lock" style="color: var(--subtle-text); margin-left: 8px;"></i>
+                                    {% endif %}
+                                </div>
+                                {% if lesson.duration %}
+                                    <div class="lesson-duration">
+                                        <i class="fas fa-clock"></i> {{ lesson.duration }} min
+                                    </div>
+                                {% endif %}
+                            </div>
+                            {% if enrollment %}
+                                {% for progress in lesson.lessonprogress_set.all %}
+                                    {% if progress.enrollment == enrollment and progress.completed %}
+                                        <div class="lesson-status">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-lessons">
+                    <i class="fas fa-info-circle" style="font-size: 3em; margin-bottom: 15px;"></i>
+                    <p>No lessons available yet. Check back soon!</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

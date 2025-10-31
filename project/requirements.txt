@@ -1,0 +1,5 @@
+Django>=5.2,<5.3
+Pillow>=10.0.0
+djongo
+pymongo==3.12.3
+sqlparse==0.2.4

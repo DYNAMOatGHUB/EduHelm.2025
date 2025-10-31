@@ -1,0 +1,495 @@
+<!-- Badge Widget Component -->
+<div class="badge-widget">
+    <div class="badge-widget-header">
+        <h3><i class="fas fa-trophy"></i> Achievements</h3>
+        <div class="badge-progress">
+            <span id="badgeCount">0</span> / <span id="badgeTotal">13</span>
+        </div>
+    </div>
+    
+    <div class="badge-grid" id="badgeGrid">
+        <div class="badge-loading">
+            <i class="fas fa-spinner fa-spin"></i> Loading badges...
+        </div>
+    </div>
+    
+    <button class="check-badges-btn" id="checkBadgesBtn">
+        <i class="fas fa-sync"></i> Check for New Badges
+    </button>
+</div>
+
+<!-- Badge Modal -->
+<div class="badge-modal" id="badgeModal">
+    <div class="badge-modal-content">
+        <button class="badge-modal-close" id="badgeModalClose">&times;</button>
+        <div class="badge-modal-icon" id="badgeModalIcon"></div>
+        <h2 id="badgeModalName"></h2>
+        <p id="badgeModalDescription"></p>
+        <div class="badge-modal-meta">
+            <div id="badgeModalStatus"></div>
+            <div id="badgeModalDate"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Badge Widget Styles */
+.badge-widget {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+
+.badge-widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
+}
+
+.badge-widget-header h3 {
+    font-size: 1.2em;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge-widget-header h3 i {
+    color: #FFD93D;
+}
+
+.badge-progress {
+    background: #f0f8ff;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: #007bff;
+}
+
+.badge-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+    min-height: 200px;
+}
+
+.badge-item {
+    position: relative;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.badge-item:hover {
+    transform: scale(1.05);
+}
+
+.badge-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    position: relative;
+    background: white;
+    border: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.badge-item.earned .badge-icon-wrapper {
+    animation: badgeShine 2s infinite;
+}
+
+@keyframes badgeShine {
+    0%, 100% { box-shadow: 0 0 0 rgba(0,0,0,0); }
+    50% { box-shadow: 0 0 20px rgba(255,217,61,0.5); }
+}
+
+.badge-icon {
+    font-size: 1.5em;
+}
+
+.badge-item.locked .badge-icon-wrapper {
+    opacity: 0.3;
+    filter: grayscale(100%);
+}
+
+.badge-item.locked .badge-icon {
+    position: relative;
+}
+
+.badge-item.locked .badge-icon::after {
+    content: '\f023';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    bottom: -5px;
+    right: -5px;
+    font-size: 0.4em;
+    background: #666;
+    color: white;
+    padding: 3px 4px;
+    border-radius: 50%;
+}
+
+.badge-name {
+    font-size: 0.75em;
+    color: #666;
+    font-weight: 500;
+    line-height: 1.2;
+    max-height: 2.4em;
+    overflow: hidden;
+}
+
+.badge-item.earned .badge-name {
+    color: #333;
+    font-weight: 600;
+}
+
+.badge-loading,
+.badge-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.check-badges-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.check-badges-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102,126,234,0.3);
+}
+
+.check-badges-btn:active {
+    transform: translateY(0);
+}
+
+/* Badge Modal */
+.badge-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-modal.show {
+    display: flex;
+}
+
+.badge-modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    max-width: 500px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    animation: modalPop 0.3s ease;
+}
+
+@keyframes modalPop {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.badge-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.8em;
+    color: #999;
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.badge-modal-close:hover {
+    background: #f0f0f0;
+    color: #333;
+}
+
+.badge-modal-icon {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4em;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.badge-modal-content h2 {
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.badge-modal-content p {
+    color: #666;
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.badge-modal-meta {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 25px;
+    padding-top: 25px;
+    border-top: 2px solid #f0f0f0;
+    font-size: 0.95em;
+}
+
+.badge-modal-meta > div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+}
+
+.badge-earned-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 15px;
+    background: #d4edda;
+    color: #155724;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+.badge-locked-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 15px;
+    background: #f8f9fa;
+    color: #6c757d;
+    border-radius: 20px;
+    font-weight: 600;
+}
+
+/* New Badge Celebration */
+.badge-celebration {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.8);
+    z-index: 3000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.badge-celebration.show {
+    display: flex;
+}
+
+.badge-celebration-content {
+    background: white;
+    border-radius: 25px;
+    padding: 50px;
+    text-align: center;
+    max-width: 600px;
+    animation: celebrationPop 0.5s ease;
+}
+
+@keyframes celebrationPop {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) rotate(-180deg);
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0);
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const badgeGrid = document.getElementById('badgeGrid');
+    const badgeCount = document.getElementById('badgeCount');
+    const badgeTotal = document.getElementById('badgeTotal');
+    const checkBadgesBtn = document.getElementById('checkBadgesBtn');
+    const badgeModal = document.getElementById('badgeModal');
+    const badgeModalClose = document.getElementById('badgeModalClose');
+    
+    // Load badges
+    function loadBadges() {
+        fetch('/users/api/badges/', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            renderBadges(data.badges);
+            badgeCount.textContent = data.total_earned;
+            badgeTotal.textContent = data.total_available;
+        })
+        .catch(error => {
+            console.error('Error loading badges:', error);
+            badgeGrid.innerHTML = '<div class="badge-empty">Failed to load badges</div>';
+        });
+    }
+    
+    // Render badges
+    function renderBadges(badges) {
+        if (badges.length === 0) {
+            badgeGrid.innerHTML = '<div class="badge-empty">No badges available</div>';
+            return;
+        }
+        
+        badgeGrid.innerHTML = badges.map(badge => `
+            <div class="badge-item ${badge.earned ? 'earned' : 'locked'}" data-badge='${JSON.stringify(badge)}'>
+                <div class="badge-icon-wrapper" style="border-color: ${badge.color}">
+                    <i class="${badge.icon} badge-icon" style="color: ${badge.color}"></i>
+                </div>
+                <div class="badge-name">${badge.name}</div>
+            </div>
+        `).join('');
+        
+        // Add click handlers
+        document.querySelectorAll('.badge-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const badge = JSON.parse(this.dataset.badge);
+                showBadgeModal(badge);
+            });
+        });
+    }
+    
+    // Show badge modal
+    function showBadgeModal(badge) {
+        document.getElementById('badgeModalIcon').innerHTML = `
+            <i class="${badge.icon}" style="color: ${badge.color}"></i>
+        `;
+        document.getElementById('badgeModalIcon').style.backgroundColor = badge.color + '20';
+        document.getElementById('badgeModalIcon').style.border = `4px solid ${badge.color}`;
+        
+        document.getElementById('badgeModalName').textContent = badge.name;
+        document.getElementById('badgeModalDescription').textContent = badge.description;
+        
+        const statusHTML = badge.earned
+            ? `<div class="badge-earned-badge"><i class="fas fa-check-circle"></i> Earned</div>`
+            : `<div class="badge-locked-badge"><i class="fas fa-lock"></i> Locked</div>`;
+        
+        const dateHTML = badge.earned
+            ? `<div><i class="fas fa-calendar"></i> ${badge.earned_at}</div>`
+            : `<div><i class="fas fa-target"></i> Goal: ${badge.requirement}</div>`;
+        
+        document.getElementById('badgeModalStatus').innerHTML = statusHTML;
+        document.getElementById('badgeModalDate').innerHTML = dateHTML;
+        
+        badgeModal.classList.add('show');
+    }
+    
+    // Close modal
+    badgeModalClose.addEventListener('click', () => {
+        badgeModal.classList.remove('show');
+    });
+    
+    badgeModal.addEventListener('click', (e) => {
+        if (e.target === badgeModal) {
+            badgeModal.classList.remove('show');
+        }
+    });
+    
+    // Check for new badges
+    checkBadgesBtn.addEventListener('click', function() {
+        const icon = this.querySelector('i');
+        icon.classList.add('fa-spin');
+        this.disabled = true;
+        
+        fetch('/users/api/badges/check/', {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            icon.classList.remove('fa-spin');
+            this.disabled = false;
+            
+            if (data.count > 0) {
+                alert(`🎉 Congratulations! You earned ${data.count} new badge${data.count > 1 ? 's' : ''}!`);
+                loadBadges();
+            } else {
+                alert('✨ No new badges earned yet. Keep studying!');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            icon.classList.remove('fa-spin');
+            this.disabled = false;
+        });
+    });
+    
+    // Get CSRF token
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+    
+    // Initial load
+    loadBadges();
+});
+</script>

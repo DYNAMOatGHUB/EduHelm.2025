@@ -1,0 +1,546 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources Library | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
+        
+        .container { max-width: 1400px; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .filters {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 40px 0 20px 0;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .section-header h2 {
+            font-size: 1.8em;
+        }
+        
+        .section-header .count {
+            background: var(--primary-color);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+        }
+        
+        .resources-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .resource-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .resource-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .resource-icon {
+            font-size: 3em;
+            text-align: center;
+            margin-bottom: 15px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            border-radius: 10px;
+        }
+        
+        .icon-pdf { color: #e74c3c; }
+        .icon-video { color: #e67e22; }
+        .icon-link { color: #3498db; }
+        .icon-image { color: #9b59b6; }
+        .icon-audio { color: #1abc9c; }
+        .icon-other { color: #95a5a6; }
+        
+        .resource-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .resource-title a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .resource-title a:hover {
+            color: var(--primary-color);
+        }
+        
+        .resource-desc {
+            color: var(--subtle-text);
+            line-height: 1.6;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+        
+        .resource-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            font-size: 0.85em;
+            color: var(--subtle-text);
+            margin-bottom: 15px;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .resource-stats {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+            background: var(--bg-color);
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            color: var(--subtle-text);
+        }
+        
+        .stat i {
+            color: var(--primary-color);
+        }
+        
+        .resource-badges {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        
+        .badge-public {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .badge-private {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .resource-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .resource-actions a,
+        .resource-actions button {
+            flex: 1;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+            border: none;
+            font-weight: 600;
+        }
+        
+        .btn-view {
+            background: var(--accent-color);
+            color: white;
+        }
+        
+        .btn-view:hover {
+            background: #0056b3;
+        }
+        
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        
+        .no-resources {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .no-resources i {
+            font-size: 5em;
+            color: var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .messages {
+            margin-bottom: 25px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'sample_home' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <div class="header">
+            <h1>
+                <i class="fas fa-folder-open"></i>
+                Resources Library
+            </h1>
+            <a href="{% url 'resource_upload' %}" class="btn btn-primary">
+                <i class="fas fa-upload"></i> Upload Resource
+            </a>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas fa-check-circle"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="filters">
+            <form method="GET" style="display: flex; gap: 15px; flex: 1;">
+                <div class="filter-group">
+                    <label>Search</label>
+                    <input type="text" name="search" placeholder="Search resources..." value="{{ request.GET.search }}">
+                </div>
+                
+                <div class="filter-group">
+                    <label>Type</label>
+                    <select name="resource_type">
+                        <option value="">All Types</option>
+                        <option value="pdf" {% if request.GET.resource_type == 'pdf' %}selected{% endif %}>PDF Documents</option>
+                        <option value="video" {% if request.GET.resource_type == 'video' %}selected{% endif %}>Videos</option>
+                        <option value="link" {% if request.GET.resource_type == 'link' %}selected{% endif %}>Links</option>
+                        <option value="image" {% if request.GET.resource_type == 'image' %}selected{% endif %}>Images</option>
+                        <option value="audio" {% if request.GET.resource_type == 'audio' %}selected{% endif %}>Audio</option>
+                        <option value="other" {% if request.GET.resource_type == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                
+                <div class="filter-group">
+                    <label>Course</label>
+                    <select name="course">
+                        <option value="">All Courses</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}" {% if request.GET.course == course.id|stringformat:"s" %}selected{% endif %}>
+                                {{ course.title }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" style="align-self: flex-end;">
+                    <i class="fas fa-search"></i> Filter
+                </button>
+            </form>
+        </div>
+        
+        <!-- My Resources Section -->
+        <div class="section-header">
+            <i class="fas fa-user"></i>
+            <h2>My Resources</h2>
+            <span class="count">{{ my_resources_count }}</span>
+        </div>
+        
+        {% if my_resources %}
+            <div class="resources-grid">
+                {% for resource in my_resources %}
+                    <div class="resource-card">
+                        <div class="resource-icon icon-{{ resource.resource_type }}">
+                            <i class="fas fa-{% if resource.resource_type == 'pdf' %}file-pdf{% elif resource.resource_type == 'video' %}video{% elif resource.resource_type == 'link' %}link{% elif resource.resource_type == 'image' %}image{% elif resource.resource_type == 'audio' %}headphones{% else %}file{% endif %}"></i>
+                        </div>
+                        
+                        <div class="resource-badges">
+                            {% if resource.is_public %}
+                                <span class="badge badge-public"><i class="fas fa-globe"></i> Public</span>
+                            {% else %}
+                                <span class="badge badge-private"><i class="fas fa-lock"></i> Private</span>
+                            {% endif %}
+                            <span class="badge" style="background: var(--bg-color); color: var(--text-color);">
+                                {{ resource.get_resource_type_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="resource-title">
+                            <a href="{% url 'resource_view' resource.id %}">{{ resource.title }}</a>
+                        </div>
+                        
+                        <div class="resource-desc">
+                            {{ resource.description|truncatewords:20 }}
+                        </div>
+                        
+                        <div class="resource-meta">
+                            {% if resource.course %}
+                                <div class="meta-item">
+                                    <i class="fas fa-book"></i>
+                                    {{ resource.course.title|truncatewords:3 }}
+                                </div>
+                            {% endif %}
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                {{ resource.created_at|date:"M d, Y" }}
+                            </div>
+                            {% if resource.file_size %}
+                                <div class="meta-item">
+                                    <i class="fas fa-hdd"></i>
+                                    {{ resource.get_file_size_mb }} MB
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="resource-stats">
+                            <div class="stat">
+                                <i class="fas fa-eye"></i>
+                                <span>{{ resource.views }} views</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-download"></i>
+                                <span>{{ resource.downloads }} downloads</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-actions">
+                            <a href="{% url 'resource_view' resource.id %}" class="btn-view">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <form method="POST" action="{% url 'resource_delete' resource.id %}" style="flex: 1;" 
+                                  onsubmit="return confirm('Delete {{ resource.title }}?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-delete" style="width: 100%;">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-resources" style="margin-bottom: 40px;">
+                <i class="fas fa-folder-open"></i>
+                <h2>No Resources Yet</h2>
+                <p style="color: var(--subtle-text); margin-bottom: 25px;">Upload your first resource to get started!</p>
+                <a href="{% url 'resource_upload' %}" class="btn btn-primary">
+                    <i class="fas fa-upload"></i> Upload Resource
+                </a>
+            </div>
+        {% endif %}
+        
+        <!-- Public Resources Section -->
+        <div class="section-header">
+            <i class="fas fa-globe"></i>
+            <h2>Public Resources</h2>
+            <span class="count">{{ public_resources_count }}</span>
+        </div>
+        
+        {% if public_resources %}
+            <div class="resources-grid">
+                {% for resource in public_resources %}
+                    <div class="resource-card">
+                        <div class="resource-icon icon-{{ resource.resource_type }}">
+                            <i class="fas fa-{% if resource.resource_type == 'pdf' %}file-pdf{% elif resource.resource_type == 'video' %}video{% elif resource.resource_type == 'link' %}link{% elif resource.resource_type == 'image' %}image{% elif resource.resource_type == 'audio' %}headphones{% else %}file{% endif %}"></i>
+                        </div>
+                        
+                        <div class="resource-badges">
+                            <span class="badge badge-public"><i class="fas fa-globe"></i> Public</span>
+                            <span class="badge" style="background: var(--bg-color); color: var(--text-color);">
+                                {{ resource.get_resource_type_display }}
+                            </span>
+                        </div>
+                        
+                        <div class="resource-title">
+                            <a href="{% url 'resource_view' resource.id %}">{{ resource.title }}</a>
+                        </div>
+                        
+                        <div class="resource-desc">
+                            {{ resource.description|truncatewords:20 }}
+                        </div>
+                        
+                        <div class="resource-meta">
+                            <div class="meta-item">
+                                <i class="fas fa-user"></i>
+                                {{ resource.user.username }}
+                            </div>
+                            {% if resource.course %}
+                                <div class="meta-item">
+                                    <i class="fas fa-book"></i>
+                                    {{ resource.course.title|truncatewords:3 }}
+                                </div>
+                            {% endif %}
+                            <div class="meta-item">
+                                <i class="fas fa-calendar"></i>
+                                {{ resource.created_at|date:"M d, Y" }}
+                            </div>
+                        </div>
+                        
+                        <div class="resource-stats">
+                            <div class="stat">
+                                <i class="fas fa-eye"></i>
+                                <span>{{ resource.views }} views</span>
+                            </div>
+                            <div class="stat">
+                                <i class="fas fa-download"></i>
+                                <span>{{ resource.downloads }} downloads</span>
+                            </div>
+                        </div>
+                        
+                        <div class="resource-actions">
+                            <a href="{% url 'resource_view' resource.id %}" class="btn-view" style="width: 100%;">
+                                <i class="fas fa-eye"></i> View Resource
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-resources">
+                <i class="fas fa-globe"></i>
+                <p style="color: var(--subtle-text);">No public resources available yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

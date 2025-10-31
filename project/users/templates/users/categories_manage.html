@@ -1,0 +1,465 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Categories | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
+        
+        .container { max-width: 1100px; margin: 0 auto; }
+        
+        .header {
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 30px;
+        }
+        
+        .form-card,
+        .categories-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+        }
+        
+        .card-title {
+            font-size: 1.5em;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .form-group input[type="text"],
+        .form-group textarea,
+        .form-group input[type="color"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+        
+        .form-group input[type="text"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .color-input-wrapper {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .color-input-wrapper input[type="color"] {
+            width: 80px;
+            height: 50px;
+            padding: 5px;
+            cursor: pointer;
+        }
+        
+        .color-preview {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-family: monospace;
+            font-weight: 600;
+        }
+        
+        .icon-selector {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .icon-option {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.3em;
+        }
+        
+        .icon-option:hover {
+            background: var(--bg-color);
+            border-color: var(--primary-color);
+        }
+        
+        .icon-option.selected {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .help-text {
+            font-size: 0.85em;
+            color: var(--subtle-text);
+            margin-top: 5px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1em;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .categories-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .category-item {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: var(--bg-color);
+            border-radius: 10px;
+            border-left: 4px solid;
+            transition: transform 0.2s;
+        }
+        
+        .category-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .category-icon {
+            font-size: 2em;
+            width: 50px;
+            text-align: center;
+        }
+        
+        .category-info {
+            flex: 1;
+        }
+        
+        .category-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        
+        .category-desc {
+            color: var(--subtle-text);
+            font-size: 0.9em;
+        }
+        
+        .category-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .delete-btn {
+            padding: 8px 16px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .delete-btn:hover {
+            background: #c82333;
+        }
+        
+        .no-categories {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--subtle-text);
+        }
+        
+        .no-categories i {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: var(--border-color);
+        }
+        
+        .messages {
+            margin-bottom: 25px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        input[type="radio"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'notes_list' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Notes
+        </a>
+        
+        <div class="header">
+            <h1>
+                <i class="fas fa-folder-open"></i>
+                Manage Note Categories
+            </h1>
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas fa-{% if message.tags == 'success' %}check-circle{% else %}exclamation-circle{% endif %}"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="layout">
+            <div class="form-card">
+                <h2 class="card-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Create New Category
+                </h2>
+                
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-tag"></i> Category Name *
+                        </label>
+                        <input type="text" id="name" name="name" required maxlength="100" 
+                               placeholder="e.g., Python, Math, Algorithms">
+                        <p class="help-text">Choose a descriptive name for your category</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-palette"></i> Color *
+                        </label>
+                        <div class="color-input-wrapper">
+                            <input type="color" id="color" name="color" value="#4CAF50">
+                            <input type="text" id="color-text" class="color-preview" value="#4CAF50" readonly>
+                        </div>
+                        <p class="help-text">Pick a color to visually identify your category</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>
+                            <i class="fas fa-icons"></i> Icon *
+                        </label>
+                        <input type="hidden" id="icon-input" name="icon" value="fas fa-folder">
+                        <div class="icon-selector">
+                            <div class="icon-option selected" data-icon="fas fa-folder">
+                                <i class="fas fa-folder"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-book">
+                                <i class="fas fa-book"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-code">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-flask">
+                                <i class="fas fa-flask"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-calculator">
+                                <i class="fas fa-calculator"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-graduation-cap">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-lightbulb">
+                                <i class="fas fa-lightbulb"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-star">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-rocket">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-brain">
+                                <i class="fas fa-brain"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-chart-line">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="icon-option" data-icon="fas fa-database">
+                                <i class="fas fa-database"></i>
+                            </div>
+                        </div>
+                        <p class="help-text">Select an icon for your category</p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">
+                            <i class="fas fa-align-left"></i> Description
+                        </label>
+                        <textarea id="description" name="description" 
+                                  placeholder="Optional description of this category..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-check"></i> Create Category
+                    </button>
+                </form>
+            </div>
+            
+            <div class="categories-card">
+                <h2 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Your Categories ({{ categories.count }})
+                </h2>
+                
+                {% if categories %}
+                    <div class="categories-list">
+                        {% for category in categories %}
+                            <div class="category-item" style="border-left-color: {{ category.color }};">
+                                <div class="category-icon" style="color: {{ category.color }};">
+                                    <i class="{{ category.icon }}"></i>
+                                </div>
+                                <div class="category-info">
+                                    <div class="category-name">{{ category.name }}</div>
+                                    {% if category.description %}
+                                        <div class="category-desc">{{ category.description }}</div>
+                                    {% endif %}
+                                </div>
+                                <div class="category-actions">
+                                    <form method="POST" action="{% url 'category_delete' category.id %}" style="display: inline;" 
+                                          onsubmit="return confirm('Delete category: {{ category.name }}? This will not delete your notes.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="delete-btn">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="no-categories">
+                        <i class="fas fa-folder-open"></i>
+                        <p>No categories created yet.</p>
+                        <p style="font-size: 0.9em;">Create your first category to organize your notes!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Color picker sync
+        const colorPicker = document.getElementById('color');
+        const colorText = document.getElementById('color-text');
+        
+        colorPicker.addEventListener('input', function() {
+            colorText.value = this.value.toUpperCase();
+        });
+        
+        // Icon selector
+        const iconOptions = document.querySelectorAll('.icon-option');
+        const iconInput = document.getElementById('icon-input');
+        
+        iconOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                iconOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                iconInput.value = this.dataset.icon;
+            });
+        });
+    </script>
+</body>
+</html>

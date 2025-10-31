@@ -1,0 +1,299 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussions - {{ group.name }} | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-color);
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .group-breadcrumb {
+            color: var(--subtle-text);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+        
+        .group-breadcrumb a {
+            color: var(--accent-color);
+            text-decoration: none;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #45a049;
+        }
+        
+        .discussions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .discussion-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 25px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .discussion-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .discussion-card.pinned {
+            border-left: 5px solid var(--primary-color);
+            background: #f0f8f0;
+        }
+        
+        .discussion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .discussion-title {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .discussion-title a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .discussion-title a:hover {
+            color: var(--primary-color);
+        }
+        
+        .discussion-badges {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .badge {
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.75em;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .badge-pinned {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .badge-locked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .discussion-content {
+            color: var(--subtle-text);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .discussion-meta {
+            display: flex;
+            gap: 25px;
+            font-size: 0.9em;
+            color: var(--subtle-text);
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .empty-state {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            padding: 80px 20px;
+            text-align: center;
+        }
+        
+        .empty-state i {
+            font-size: 5em;
+            color: var(--border-color);
+            margin-bottom: 20px;
+        }
+        
+        .messages {
+            margin-bottom: 25px;
+        }
+        
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'group_detail' group.id %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Group
+        </a>
+        
+        <div class="group-breadcrumb">
+            <a href="{% url 'groups_list' %}">Groups</a> / 
+            <a href="{% url 'group_detail' group.id %}">{{ group.name }}</a> / 
+            Discussions
+        </div>
+        
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        <i class="fas fa-check-circle"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <div class="header">
+            <h1>
+                <i class="fas fa-comments"></i>
+                Discussions
+            </h1>
+            <a href="{% url 'discussion_create' group.id %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> New Discussion
+            </a>
+        </div>
+        
+        {% if discussions %}
+            <div class="discussions-list">
+                {% for discussion in discussions %}
+                    <div class="discussion-card {% if discussion.is_pinned %}pinned{% endif %}">
+                        <div class="discussion-header">
+                            <div style="flex: 1;">
+                                <div class="discussion-title">
+                                    <a href="{% url 'discussion_detail' discussion.id %}">
+                                        {{ discussion.title }}
+                                    </a>
+                                </div>
+                                <div class="discussion-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-user"></i>
+                                        <strong>{{ discussion.author.username }}</strong>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-reply"></i>
+                                        {{ discussion.reply_count }} replies
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-clock"></i>
+                                        {{ discussion.updated_at|timesince }} ago
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="discussion-badges">
+                                {% if discussion.is_pinned %}
+                                    <span class="badge badge-pinned">
+                                        <i class="fas fa-thumbtack"></i> Pinned
+                                    </span>
+                                {% endif %}
+                                {% if discussion.is_locked %}
+                                    <span class="badge badge-locked">
+                                        <i class="fas fa-lock"></i> Locked
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="discussion-content">
+                            {{ discussion.content|truncatewords:30 }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-comments"></i>
+                <h2>No Discussions Yet</h2>
+                <p style="color: var(--subtle-text); margin: 20px 0;">
+                    Be the first to start a discussion in this group!
+                </p>
+                <a href="{% url 'discussion_create' group.id %}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Start Discussion
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

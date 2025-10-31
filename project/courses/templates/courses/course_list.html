@@ -1,0 +1,295 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Courses | EduHelm</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #f7f9fc;
+            --card-bg: #ffffff;
+            --text-color: #1a1a1a;
+            --subtle-text: #606060;
+            --primary-color: #4CAF50;
+            --accent-color: #007bff;
+            --border-color: #e0e0e0;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .header { text-align: center; margin-bottom: 40px; }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
+        .header p { color: var(--subtle-text); font-size: 1.1em; }
+        
+        .back-btn { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px; 
+            color: var(--accent-color); 
+            text-decoration: none; 
+            margin-bottom: 20px;
+            font-weight: 500;
+            transition: gap 0.2s;
+        }
+        .back-btn:hover { gap: 12px; }
+        
+        .filters {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-group {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .filter-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+        
+        .course-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        
+        .course-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+        }
+        
+        .course-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+        }
+        
+        .course-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .course-content {
+            padding: 20px;
+        }
+        
+        .course-category {
+            display: inline-block;
+            background: var(--bg-color);
+            color: var(--accent-color);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .course-title {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .course-title a {
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .course-title a:hover {
+            color: var(--primary-color);
+        }
+        
+        .course-description {
+            color: var(--subtle-text);
+            font-size: 0.95em;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .course-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .course-instructor {
+            color: var(--subtle-text);
+            font-size: 0.9em;
+        }
+        
+        .course-instructor i {
+            color: var(--primary-color);
+            margin-right: 5px;
+        }
+        
+        .course-price {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .badge-beginner { background: #e3f2fd; color: #1976d2; }
+        .badge-intermediate { background: #fff3e0; color: #f57c00; }
+        .badge-advanced { background: #fce4ec; color: #c2185b; }
+        
+        .no-courses {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--subtle-text);
+        }
+        
+        .no-courses i {
+            font-size: 4em;
+            color: var(--border-color);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'sample_home' %}" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <div class="header">
+            <h1><i class="fas fa-graduation-cap"></i> Browse Courses</h1>
+            <p>Discover courses to enhance your skills and knowledge</p>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label for="search"><i class="fas fa-search"></i> Search</label>
+                <input type="text" id="search" placeholder="Search courses..." onchange="applyFilters()">
+            </div>
+            <div class="filter-group">
+                <label for="category"><i class="fas fa-folder"></i> Category</label>
+                <select id="category" onchange="applyFilters()">
+                    <option value="">All Categories</option>
+                    {% for code, name in categories %}
+                        <option value="{{ code }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-group">
+                <label for="difficulty"><i class="fas fa-signal"></i> Difficulty</label>
+                <select id="difficulty" onchange="applyFilters()">
+                    <option value="">All Levels</option>
+                    {% for code, name in difficulties %}
+                        <option value="{{ code }}">{{ name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        
+        {% if courses %}
+            <div class="course-grid">
+                {% for course in courses %}
+                    <div class="course-card">
+                        <div class="course-thumbnail">
+                            {% if course.thumbnail %}
+                                <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}">
+                            {% else %}
+                                <i class="fas fa-book-open"></i>
+                            {% endif %}
+                        </div>
+                        <div class="course-content">
+                            <span class="course-category">{{ course.get_category_display }}</span>
+                            <span class="badge badge-{{ course.difficulty }}">{{ course.get_difficulty_display }}</span>
+                            
+                            <h3 class="course-title">
+                                <a href="{% url 'course_detail' course.slug %}">{{ course.title }}</a>
+                            </h3>
+                            
+                            <p class="course-description">
+                                {{ course.short_description|default:course.description|truncatewords:20 }}
+                            </p>
+                            
+                            <div class="course-meta">
+                                <span class="course-instructor">
+                                    <i class="fas fa-user"></i> {{ course.instructor.get_full_name|default:course.instructor.username }}
+                                </span>
+                                <span class="course-price">
+                                    {% if course.is_free %}
+                                        Free
+                                    {% else %}
+                                        ${{ course.price }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-courses">
+                <i class="fas fa-inbox"></i>
+                <h2>No courses found</h2>
+                <p>Try adjusting your filters or check back later</p>
+            </div>
+        {% endif %}
+    </div>
+    
+    <script>
+        function applyFilters() {
+            const search = document.getElementById('search').value;
+            const category = document.getElementById('category').value;
+            const difficulty = document.getElementById('difficulty').value;
+            
+            let url = '{% url "course_list" %}?';
+            if (search) url += `search=${search}&`;
+            if (category) url += `category=${category}&`;
+            if (difficulty) url += `difficulty=${difficulty}&`;
+            
+            window.location.href = url;
+        }
+    </script>
+</body>
+</html>
