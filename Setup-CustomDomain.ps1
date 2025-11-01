@@ -2,8 +2,6 @@
 # Must run as Administrator!
 
 $hostsPath = "C:\Windows\System32\drivers\etc\hosts"
-$domain = "eduhelm.local"
-$ip = "127.0.0.1"
 
 Write-Host "`n🔧 EduHelm Custom Domain Setup" -ForegroundColor Cyan
 Write-Host "================================`n" -ForegroundColor Cyan

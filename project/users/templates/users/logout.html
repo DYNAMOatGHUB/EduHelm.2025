@@ -1,4 +1,5 @@
 {% extends "users/base.html" %}
+{% load static %}
 </style>
 
 <div class="bg-orb orb-left"></div>
@@ -9,7 +10,7 @@
     <!-- Brand / left panel -->
     <aside class="brand-panel" aria-hidden="false">
         <div class="brand-badge">
-            <div class="brand-icon" aria-hidden="true"><strong>EH</strong></div>
+            <img src="{% static 'users/logo.svg' %}" alt="EduHelm Logo" style="width: 150px; height: 150px; object-fit: contain;">
             <div>
                 <h1 class="brand-title">EduHelm</h1>
                 <div class="brand-tag">Navigate learning. Master skills.</div>

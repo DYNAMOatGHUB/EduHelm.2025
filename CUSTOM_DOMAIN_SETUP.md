@@ -18,7 +18,11 @@ Use: **`http://eduhelm.local:8000`** 🎉
 
 ### **Step 2: Start Your Server**
 
-Double-click: `START_EDUHELM.bat` (or run server manually)
+Run server manually:
+```powershell
+cd project
+python manage.py runserver
+```
 
 ### **Step 3: Access EduHelm**
 

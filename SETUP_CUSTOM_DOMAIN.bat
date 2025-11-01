@@ -32,8 +32,8 @@ if %errorLevel% == 0 (
     echo Custom domain already configured!
 ) else (
     echo # EduHelm Educational Platform - Custom Domain>> %WINDIR%\System32\drivers\etc\hosts
-    echo 127.0.0.1       eduhelm.local>> %WINDIR%\System32\drivers\etc\hosts
-    echo 127.0.0.1       www.eduhelm.local>> %WINDIR%\System32\drivers\etc\hosts
+    echo 127.0.0.1 eduhelm.local>> %WINDIR%\System32\drivers\etc\hosts
+    echo 127.0.0.1 www.eduhelm.local>> %WINDIR%\System32\drivers\etc\hosts
     echo.
     echo Successfully added custom domain!
 )
