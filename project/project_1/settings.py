@@ -88,30 +88,18 @@ WSGI_APPLICATION = 'project_1.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# MongoDB Configuration
-MONGODB_URI = config('MONGODB_URI', default='mongodb://localhost:27017/')
-MONGODB_NAME = config('MONGODB_NAME', default='eduhelm_db')
-
-# Parse URI to add SSL parameters if needed
-# For local development, use mongodb://localhost:27017/
-# For MongoDB Atlas, ensure URI includes: ?ssl=true&ssl_cert_reqs=CERT_NONE
-if 'mongodb+srv://' in MONGODB_URI or 'ssl=true' in MONGODB_URI:
-    # MongoDB Atlas or SSL connection
-    if '?' not in MONGODB_URI:
-        MONGODB_URI += '?ssl=true&ssl_cert_reqs=CERT_NONE'
-    elif 'ssl=' not in MONGODB_URI:
-        MONGODB_URI += '&ssl=true&ssl_cert_reqs=CERT_NONE'
-
+# Use SQLite for Django's built-in tables (User, Session, etc.)
+# This is compatible with all Django features and doesn't require external database
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'NAME': MONGODB_NAME,
-        'ENFORCE_SCHEMA': False,
-        'CLIENT': {
-            'host': MONGODB_URI,
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# MongoDB Configuration (for future direct pymongo usage if needed)
+# MONGODB_URI = config('MONGODB_URI', default='mongodb://localhost:27017/')
+# MONGODB_NAME = config('MONGODB_NAME', default='eduhelm_db')
 
 
 # Password validation
