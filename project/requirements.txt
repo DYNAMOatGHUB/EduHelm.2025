@@ -4,7 +4,7 @@ Pillow>=10.0.0
 
 # MongoDB
 djongo==1.3.7
-pymongo==3.12.3  # Upgraded for better SSL/TLS support with MongoDB Atlas
+pymongo==3.11.4  # Locked to this version for djongo compatibility
 sqlparse==0.2.4
 dnspython==2.3.0  # Required for MongoDB Atlas (mongodb+srv:// URIs)
 certifi  # SSL certificate bundle for secure connections
