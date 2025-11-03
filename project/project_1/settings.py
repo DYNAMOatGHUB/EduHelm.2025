@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+from decouple import config, Csv
+import dj_database_url
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x7ewtiu^zqv!-hjh)*)_$(4!d(an75u-e4l!*y_1yup)b$k+c^'
+SECRET_KEY = config('SECRET_KEY', default='django-insecure-x7ewtiu^zqv!-hjh)*)_$(4!d(an75u-e4l!*y_1yup)b$k+c^')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG', default=True, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver', 'eduhelm.local', 'www.eduhelm.local']
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='127.0.0.1,localhost,testserver,eduhelm.local,www.eduhelm.local', cast=Csv())
 
 
 # Application definition
@@ -44,6 +47,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add whitenoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,18 +79,17 @@ WSGI_APPLICATION = 'project_1.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# MongoDB Configuration
+MONGODB_URI = config('MONGODB_URI', default='mongodb://localhost:27017/')
+MONGODB_NAME = config('MONGODB_NAME', default='eduhelm_db')
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
-        'NAME': 'eduhelm_db',  # MongoDB database name
+        'NAME': MONGODB_NAME,
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
-            'host': 'localhost',  # MongoDB host
-            'port': 27017,        # MongoDB port
-            'username': '',       # Optional: MongoDB username
-            'password': '',       # Optional: MongoDB password
-            # 'authSource': 'admin',  # Uncomment if using authentication
-            # 'authMechanism': 'SCRAM-SHA-1'
+            'host': MONGODB_URI,
         }
     }
 }
@@ -126,7 +129,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+# Media files (User uploads)
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -135,5 +144,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'                 # Redirect here when @login_required blocks access
 LOGIN_REDIRECT_URL = 'sample_home'  # Redirect here after successful login
 LOGOUT_REDIRECT_URL = 'sample_home' # Redirect here after logout
-MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
-MEDIA_URL='/media/'
