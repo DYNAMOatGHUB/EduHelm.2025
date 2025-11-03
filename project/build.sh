@@ -12,4 +12,8 @@ python manage.py collectstatic --no-input
 # So we skip migrate command
 # python manage.py migrate
 
+# Create admin user if it doesn't exist
+echo "Creating admin user..."
+python manage.py createadmin
+
 echo "Build completed successfully!"
