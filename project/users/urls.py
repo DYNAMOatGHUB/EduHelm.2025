@@ -11,6 +11,12 @@ urlpatterns = [
     path('study/end/', views.end_session, name='end_session'),
     path('study/history/', views.study_history, name='study_history'),
     path('study/analytics/', views.study_analytics, name='study_analytics'),
+    path('study/schedule/', views.schedule_list, name='study_schedule'),
+    path('study/schedule/create/', views.schedule_create, name='study_schedule_create'),
+    path('study/schedule/<int:schedule_id>/delete/', views.schedule_delete, name='study_schedule_delete'),
+    path('study/schedule/<int:schedule_id>/edit/', views.schedule_edit, name='study_schedule_edit'),
+    path('study/schedule/calendar/', views.schedule_calendar, name='study_schedule_calendar'),
+    path('api/schedule/events/', views.schedule_events_api, name='api_schedule_events'),
     path('study/goals/', views.manage_goals, name='manage_goals'),
     path('study/goals/delete/<int:goal_id>/', views.delete_goal, name='delete_goal'),
     

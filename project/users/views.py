@@ -288,6 +288,172 @@ def study_history(request):
 
 
 @login_required
+def schedule_list(request):
+    """List scheduled study events (simple calendar/list view)."""
+    from .models import StudySchedule
+
+    # Get user's schedules
+    schedules = StudySchedule.objects.filter(user=request.user, is_active=True)
+
+    # Optional date range filter
+    date_from = request.GET.get('date_from')
+    date_to = request.GET.get('date_to')
+    if date_from:
+        try:
+            from datetime import datetime
+            df = datetime.strptime(date_from, '%Y-%m-%d')
+            schedules = schedules.filter(scheduled_start__date__gte=df.date())
+        except Exception:
+            pass
+    if date_to:
+        try:
+            from datetime import datetime
+            dt = datetime.strptime(date_to, '%Y-%m-%d')
+            schedules = schedules.filter(scheduled_start__date__lte=dt.date())
+        except Exception:
+            pass
+
+    context = {
+        'schedules': schedules,
+    }
+    return render(request, 'users/schedule_list.html', context)
+
+
+@login_required
+def schedule_create(request):
+    """Create a new scheduled study event."""
+    from .models import StudySchedule
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description', '')
+        start = request.POST.get('scheduled_start')
+        end = request.POST.get('scheduled_end')
+        duration = request.POST.get('duration_minutes')
+        recurrence = request.POST.get('recurrence', 'none')
+        reminder = request.POST.get('reminder_minutes_before', 15)
+
+        try:
+            from datetime import datetime
+            scheduled_start = datetime.fromisoformat(start)
+        except Exception:
+            messages.error(request, 'Invalid start datetime format. Use YYYY-MM-DDTHH:MM')
+            return redirect('study_schedule')
+
+        scheduled_end = None
+        if end:
+            try:
+                from datetime import datetime
+                scheduled_end = datetime.fromisoformat(end)
+            except Exception:
+                scheduled_end = None
+
+        schedule = StudySchedule.objects.create(
+            user=request.user,
+            title=title,
+            description=description,
+            scheduled_start=scheduled_start,
+            scheduled_end=scheduled_end,
+            duration_minutes=int(duration) if duration else None,
+            is_recurring=(recurrence != 'none'),
+            recurrence=recurrence,
+            reminder_minutes_before=int(reminder) if reminder else 15,
+        )
+
+        messages.success(request, 'Scheduled event created successfully!')
+        return redirect('study_schedule')
+
+    # GET: render simple form
+    return render(request, 'users/schedule_form.html')
+
+
+@login_required
+def schedule_delete(request, schedule_id):
+    from .models import StudySchedule
+    schedule = get_object_or_404(StudySchedule, id=schedule_id, user=request.user)
+    if request.method == 'POST':
+        schedule.delete()
+        messages.success(request, 'Scheduled event deleted.')
+        return redirect('study_schedule')
+    return render(request, 'users/schedule_delete_confirm.html', {'schedule': schedule})
+
+
+@login_required
+def schedule_events_api(request):
+    """Return schedules as JSON events (for calendar widgets)."""
+    from .models import StudySchedule
+    schedules = StudySchedule.objects.filter(user=request.user, is_active=True)
+
+    data = []
+    for s in schedules:
+        event = {
+            'id': s.id,
+            'title': s.title,
+            'start': s.scheduled_start.isoformat(),
+            'end': s.scheduled_end.isoformat() if s.scheduled_end else None,
+            'allDay': False,
+            'description': s.description,
+            'duration_minutes': s.duration_minutes,
+            'recurrence': s.recurrence,
+            'reminder_minutes_before': s.reminder_minutes_before,
+        }
+        data.append(event)
+
+    return JsonResponse(data, safe=False)
+
+
+@login_required
+def schedule_edit(request, schedule_id):
+    """Edit an existing scheduled study event."""
+    from .models import StudySchedule
+
+    schedule = get_object_or_404(StudySchedule, id=schedule_id, user=request.user)
+
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description', '')
+        start = request.POST.get('scheduled_start')
+        end = request.POST.get('scheduled_end')
+        duration = request.POST.get('duration_minutes')
+        recurrence = request.POST.get('recurrence', 'none')
+        reminder = request.POST.get('reminder_minutes_before', 15)
+
+        try:
+            from datetime import datetime
+            schedule.scheduled_start = datetime.fromisoformat(start)
+        except Exception:
+            messages.error(request, 'Invalid start datetime format. Use YYYY-MM-DDTHH:MM')
+            return redirect('study_schedule')
+
+        if end:
+            try:
+                from datetime import datetime
+                schedule.scheduled_end = datetime.fromisoformat(end)
+            except Exception:
+                schedule.scheduled_end = None
+
+        schedule.title = title
+        schedule.description = description
+        schedule.duration_minutes = int(duration) if duration else None
+        schedule.is_recurring = (recurrence != 'none')
+        schedule.recurrence = recurrence
+        schedule.reminder_minutes_before = int(reminder) if reminder else 15
+        schedule.save()
+
+        messages.success(request, 'Scheduled event updated successfully!')
+        return redirect('study_schedule')
+
+    # GET: render form with existing schedule
+    context = {'schedule': schedule}
+    return render(request, 'users/schedule_form.html', context)
+
+
+@login_required
+def schedule_calendar(request):
+    """Render calendar view powered by FullCalendar (client fetches /api/schedule/events/)."""
+    return render(request, 'users/schedule_calendar.html')
+
+
+@login_required
 def study_analytics(request):
     """Advanced analytics and visualizations"""
     import json

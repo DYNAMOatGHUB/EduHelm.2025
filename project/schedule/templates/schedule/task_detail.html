@@ -1,0 +1,57 @@
+{% extends "users/base.html" %}
+
+{% block title %}Task: {{ object.title }} | EduHelm{% endblock %}
+{% block schedule_active %}active{% endblock schedule_active %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="settings-section">
+        <h2 class="section-title" style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+            <span>
+                <i class="fas fa-tasks"></i> {{ object.title }}
+            </span>
+            {% if object.is_completed %}
+                <span class="status-badge completed">Completed</span>
+            {% else %}
+                <span class="status-badge pending">Pending</span>
+            {% endif %}
+        </h2>
+        <div class="task-content">
+            <span class="detail-label"><i class="far fa-sticky-note"></i> Description:</span>
+            <p class="detail-value">
+                {% if object.content %}{{ object.content|linebreaksbr }}{% else %}<em>No description provided.</em>{% endif %}
+            </p>
+        </div>
+        <div class="task-detail-grid">
+            <div class="detail-item">
+                <span class="detail-label"><i class="far fa-calendar-alt"></i> Due Date:</span>
+                <p class="detail-value">
+                    {% if object.due_date %}
+                        {{ object.due_date|date:"F d, Y, P" }}
+                    {% else %}
+                        <em>No due date set.</em>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label"><i class="far fa-clock"></i> Created On:</span>
+                <p class="detail-value">{{ object.created_at|date:"F d, Y, P" }}</p>
+            </div>
+        </div>
+        <div class="task-actions" style="margin-top: 30px; border-top: 1px solid var(--sidebar-bg); padding-top: 20px;">
+            <a href="{% url 'schedule:task_update' object.pk %}" class="action-button link-button"
+               style="background-color: var(--accent-color); color: var(--card-bg); border-color: var(--accent-color);">
+                <i class="fas fa-edit"></i> Edit Task
+            </a>
+            <a href="{% url 'schedule:task_delete' object.pk %}" class="action-button link-button"
+               style="background-color: var(--danger-color); color: var(--card-bg); border-color: var(--danger-color); margin-left: 10px;">
+                <i class="fas fa-trash-alt"></i> Delete Task
+            </a>
+            <a href="{% url 'schedule:task_list' %}" class="action-button link-button"
+               style="margin-left: 10px; background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--subtle-text);">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

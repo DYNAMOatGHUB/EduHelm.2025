@@ -1,0 +1,52 @@
+{% extends "users/base.html" %}
+
+{% block title %}Dashboard | EduHelm{% endblock title %}
+{% block dashboard_active %}active{% endblock dashboard_active %}
+
+{% block content %}
+<div>
+    <h1 class="header">Welcome back, {{ user.username|default:"Learner" }} 👋</h1>
+    <p class="subheader">Here’s your daily study overview and AI recommendations.</p>
+</div>
+<div class="dashboard-grid">
+    <div>
+        <div class="card ai-section">
+            <h3><i class="fas fa-robot"></i> EduHelm AI Assistant</h3>
+            <p>Ask AI for a study plan or help understanding a topic:</p>
+            <input type="text" placeholder="e.g., Plan my Django revision session">
+            <button><i class="fas fa-paper-plane"></i> Ask AI</button>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-bell"></i> Reminder</h3>
+            <p><strong>Frontend Layout Task</strong> - Due in 2 hours</p>
+            <p style="color: var(--subtle-text); font-size:0.9em;">Don’t forget to finalize the CSS grid section.</p>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-calendar-alt"></i> Today’s Schedule</h3>
+            <ul class="schedule-list">
+                <li>9:00 AM - Data Structures Revision</li>
+                <li>11:00 AM - Django Project Work</li>
+                <li>3:00 PM - Break / Relax</li>
+            </ul>
+        </div>
+    </div>
+    <div>
+        <div class="card">
+            <h3><i class="fas fa-chart-line"></i> Progress</h3>
+            <p>Weekly Study Completion:</p>
+            <div class="progress-bar"><div></div></div>
+            <p class="streak">🔥 8 Day Streak</p>
+        </div>
+        <div class="card">
+            <h3><i class="fas fa-bolt"></i> Quick Actions</h3>
+            <a href="{% url 'schedule:task_create' %}" style="text-decoration: none;">
+                <button class="quick-btn"><span><i class="fas fa-plus-circle"></i> Create Study Block</span></button>
+            </a>
+            <a href="{% url 'schedule:task_list' %}" style="text-decoration: none;">
+                <button class="quick-btn"><span><i class="fas fa-calendar-check"></i> Review Schedule</span></button>
+            </a>
+            <button class="quick-btn"><span><i class="fas fa-lightbulb"></i> Generate Study Plan</span></button>
+        </div>
+    </div>
+</div>
+{% endblock content %}

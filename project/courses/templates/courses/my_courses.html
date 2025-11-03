@@ -5,26 +5,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Courses | EduHelm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* Theme Variables */
         :root {
-            --bg-color: #f7f9fc;
-            --card-bg: #ffffff;
-            --text-color: #1a1a1a;
-            --subtle-text: #606060;
-            --primary-color: #4CAF50;
-            --accent-color: #007bff;
-            --border-color: #e0e0e0;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --transition-speed: 0.3s;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
         
-        .container { max-width: 1200px; margin: 0 auto; }
+        [data-theme="light"] {
+            --bg-gradient-1: #f0f4ff;
+            --bg-gradient-2: #e0e7ff;
+            --bg-gradient-3: #fce7f3;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --text-color: #1a202c;
+            --subtle-text: #4a5568;
+            --primary-color: #3b82f6;
+            --accent-color: #ec4899;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
         
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
-        .header p { color: var(--subtle-text); font-size: 1.1em; }
+        [data-theme="dark"] {
+            --bg-gradient-1: #0a0e27;
+            --bg-gradient-2: #1a1f3a;
+            --bg-gradient-3: #2a1a3f;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-color: #ffffff;
+            --subtle-text: #b8bfd8;
+            --primary-color: #00eaff;
+            --accent-color: #ff60c0;
+            --border-color: rgba(0, 234, 255, 0.1);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif;
+            transition: background-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        border-color var(--transition-speed) ease;
+        }
+        body { 
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+            color: var(--text-color); 
+            min-height: 100vh; 
+            padding: 30px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* No custom cursor elements needed - using particle trail */
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes graduationFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-15px) rotate(10deg);
+            }
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+        }
+        .header h1 { 
+            font-size: 3em; 
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .header h1 i {
+            animation: graduationFloat 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px var(--primary-color));
+        }
+        .header p { 
+            color: var(--subtle-text); 
+            font-size: 1.1em; 
+        }
         
         .back-btn { 
             display: inline-flex; 
@@ -47,22 +123,45 @@
         
         .stat-card {
             background: var(--card-bg);
+            backdrop-filter: blur(10px);
             padding: 25px;
-            border-radius: 12px;
+            border-radius: 18px;
             box-shadow: var(--shadow);
             text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeInUp 0.6s ease-out backwards;
+        }
+
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(0, 234, 255, 0.25);
+            border-color: rgba(0, 234, 255, 0.4);
         }
         
         .stat-icon {
             font-size: 2.5em;
             margin-bottom: 10px;
-            color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 10px var(--primary-color));
         }
         
         .stat-value {
             font-size: 2em;
             font-weight: 600;
             margin-bottom: 5px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
         
         .stat-label {
@@ -77,19 +176,27 @@
         
         .enrollment-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
             box-shadow: var(--shadow);
             padding: 25px;
             display: grid;
             grid-template-columns: 120px 1fr auto;
             gap: 25px;
             align-items: center;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.6s ease-out backwards;
         }
+
+        .enrollment-card:nth-child(1) { animation-delay: 0.5s; }
+        .enrollment-card:nth-child(2) { animation-delay: 0.6s; }
+        .enrollment-card:nth-child(3) { animation-delay: 0.7s; }
         
         .enrollment-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 234, 255, 0.25);
+            border-color: rgba(0, 234, 255, 0.4);
         }
         
         .course-thumbnail {
@@ -261,7 +368,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <div class="container">
         <a href="{% url 'sample_home' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -378,5 +485,67 @@
             </div>
         {% endif %}
     </div>
+
+    <script>
+        // ========== PARTICLE TRAIL EFFECT ==========
+        let particles = [];
+        const particleCount = 20;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.opacity = 1;
+                this.color = Math.random() > 0.5 ? '#ff60c0' : '#00eaff';
+                
+                this.element = document.createElement('div');
+                this.element.style.position = 'fixed';
+                this.element.style.width = this.size + 'px';
+                this.element.style.height = this.size + 'px';
+                this.element.style.borderRadius = '50%';
+                this.element.style.background = this.color;
+                this.element.style.pointerEvents = 'none';
+                this.element.style.zIndex = '9998';
+                this.element.style.boxShadow = `0 0 10px ${this.color}`;
+                document.body.appendChild(this.element);
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+                
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.style.opacity = this.opacity;
+                
+                if (this.opacity <= 0) {
+                    this.element.remove();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.8) {
+                particles.push(new Particle(e.clientX, e.clientY));
+            }
+            
+            particles = particles.filter(particle => particle.update());
+            
+            if (particles.length > particleCount) {
+                const removed = particles.shift();
+                removed.element.remove();
+            }
+        });
+
+        // Theme Toggle Support
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+    </script>
 </body>
 </html>

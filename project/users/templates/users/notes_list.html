@@ -5,23 +5,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Notes | EduHelm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* Theme Variables */
         :root {
-            --bg-color: #f7f9fc;
-            --card-bg: #ffffff;
-            --text-color: #1a1a1a;
-            --subtle-text: #606060;
-            --primary-color: #4CAF50;
-            --accent-color: #007bff;
-            --warning-color: #ffc107;
-            --border-color: #e0e0e0;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --transition-speed: 0.3s;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
         
-        .container { max-width: 1400px; margin: 0 auto; }
+        [data-theme="light"] {
+            --bg-gradient-1: #f0f4ff;
+            --bg-gradient-2: #e0e7ff;
+            --bg-gradient-3: #fce7f3;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --text-color: #1a202c;
+            --subtle-text: #4a5568;
+            --primary-color: #3b82f6;
+            --accent-color: #ec4899;
+            --warning-color: #ffc107;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        [data-theme="dark"] {
+            --bg-gradient-1: #0a0e27;
+            --bg-gradient-2: #1a1f3a;
+            --bg-gradient-3: #2a1a3f;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-color: #ffffff;
+            --subtle-text: #b8bfd8;
+            --primary-color: #00eaff;
+            --accent-color: #ff60c0;
+            --warning-color: #ffc107;
+            --border-color: rgba(0, 234, 255, 0.1);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif;
+            transition: background-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        border-color var(--transition-speed) ease;
+        }
+        body { 
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+            color: var(--text-color); 
+            min-height: 100vh; 
+            padding: 30px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* No custom cursor elements needed - using particle trail */
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container { 
+            max-width: 1400px; 
+            margin: 0 auto; 
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
         
         .header {
             display: flex;
@@ -31,32 +82,76 @@
         }
         
         .header h1 {
-            font-size: 2.2em;
+            font-size: 2.5em;
             display: flex;
             align-items: center;
             gap: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header h1 i {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: noteFlip 3s ease-in-out infinite;
+            filter: drop-shadow(0 0 15px var(--primary-color));
+        }
+
+        @keyframes noteFlip {
+            0%, 100% {
+                transform: rotateY(0deg) scale(1);
+            }
+            50% {
+                transform: rotateY(180deg) scale(1.1);
+            }
         }
         
         .btn {
             padding: 12px 25px;
             border: none;
-            border-radius: 8px;
+            border-radius: 10px;
             font-weight: 600;
             cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
         }
         
         .btn-primary {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
+            box-shadow: 0 5px 20px rgba(0, 234, 255, 0.3);
         }
         
         .btn-primary:hover {
-            background: #45a049;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(0, 234, 255, 0.5);
         }
         
         .back-btn {
@@ -67,18 +162,29 @@
             text-decoration: none;
             margin-bottom: 20px;
             font-weight: 500;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 8px var(--accent-color));
+        }
+
+        .back-btn:hover {
+            gap: 12px;
+            transform: translateX(-5px);
         }
         
         .filters {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 18px;
             box-shadow: var(--shadow);
             margin-bottom: 30px;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
             align-items: center;
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.7s ease-out backwards;
+            animation-delay: 0.1s;
         }
         
         .filter-group {
@@ -91,6 +197,7 @@
             margin-bottom: 8px;
             font-weight: 600;
             font-size: 0.9em;
+            color: var(--text-color);
         }
         
         .filter-group select,
@@ -98,8 +205,18 @@
             width: 100%;
             padding: 10px 15px;
             border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 1em;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 234, 255, 0.1);
         }
         
         .filter-tabs {
@@ -109,20 +226,43 @@
         
         .filter-tab {
             padding: 10px 20px;
-            background: var(--bg-color);
+            background: var(--card-bg);
             border: 2px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 234, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .filter-tab:hover::before {
+            left: 100%;
+        }
+
+        .filter-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 234, 255, 0.2);
         }
         
         .filter-tab.active {
-            background: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
             color: white;
-            border-color: var(--primary-color);
+            border-color: transparent;
+            box-shadow: 0 5px 20px rgba(0, 234, 255, 0.4);
         }
         
         .notes-grid {
@@ -133,17 +273,28 @@
         
         .note-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
             box-shadow: var(--shadow);
             padding: 25px;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             border-left: 4px solid var(--primary-color);
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.6s ease-out backwards;
         }
+
+        .note-card:nth-child(1) { animation-delay: 0.2s; }
+        .note-card:nth-child(2) { animation-delay: 0.3s; }
+        .note-card:nth-child(3) { animation-delay: 0.4s; }
+        .note-card:nth-child(4) { animation-delay: 0.5s; }
+        .note-card:nth-child(5) { animation-delay: 0.6s; }
+        .note-card:nth-child(6) { animation-delay: 0.7s; }
         
         .note-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 234, 255, 0.25);
+            border-color: rgba(0, 234, 255, 0.4);
         }
         
         .note-header {
@@ -263,21 +414,40 @@
         
         .stats {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            padding: 30px;
+            border-radius: 18px;
             box-shadow: var(--shadow);
             margin-bottom: 30px;
             text-align: center;
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.6s ease-out backwards;
+            animation-delay: 0.05s;
         }
         
         .stats-value {
-            font-size: 2.5em;
+            font-size: 3em;
             font-weight: 700;
-            color: var(--primary-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .stats-value + div {
+            color: var(--subtle-text);
+            font-size: 1.1em;
+            margin-top: 10px;
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <div class="container">
         <a href="{% url 'sample_home' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -288,7 +458,10 @@
                 <i class="fas fa-sticky-note"></i>
                 My Notes
             </h1>
-            <div style="display: flex; gap: 15px;">
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <button id="theme-toggle" class="btn" style="background: var(--card-bg); color: var(--text-color); border: 1px solid var(--border-color); cursor: pointer;">
+                    <i class="fas fa-moon"></i> <span id="theme-text">Dark</span>
+                </button>
                 <a href="{% url 'categories_manage' %}" class="btn" style="background: var(--accent-color); color: white;">
                     <i class="fas fa-folder"></i> Manage Categories
                 </a>
@@ -429,5 +602,90 @@
             </div>
         {% endif %}
     </div>
-</body>
-</html>
+
+    <script>
+        // ========== PARTICLE TRAIL EFFECT ==========
+        let particles = [];
+        const particleCount = 20;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.opacity = 1;
+                this.color = Math.random() > 0.5 ? '#ff60c0' : '#00eaff';
+                
+                this.element = document.createElement('div');
+                this.element.style.position = 'fixed';
+                this.element.style.width = this.size + 'px';
+                this.element.style.height = this.size + 'px';
+                this.element.style.borderRadius = '50%';
+                this.element.style.background = this.color;
+                this.element.style.pointerEvents = 'none';
+                this.element.style.zIndex = '9998';
+                this.element.style.boxShadow = `0 0 10px ${this.color}`;
+                document.body.appendChild(this.element);
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+                
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.style.opacity = this.opacity;
+                
+                if (this.opacity <= 0) {
+                    this.element.remove();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.8) {
+                particles.push(new Particle(e.clientX, e.clientY));
+            }
+            
+            particles = particles.filter(particle => particle.update());
+            
+            if (particles.length > particleCount) {
+                const removed = particles.shift();
+                removed.element.remove();
+            }
+        });
+
+        // ========== THEME TOGGLE ==========
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeText = document.getElementById('theme-text');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+        updateThemeButton(savedTheme);
+        
+        function updateThemeButton(theme) {
+            if (theme === 'dark') {
+                themeIcon.className = 'fas fa-moon';
+                themeText.textContent = 'Dark';
+            } else {
+                themeIcon.className = 'fas fa-sun';
+                themeText.textContent = 'Light';
+            }
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateThemeButton(newTheme);
+        });
+    </script>

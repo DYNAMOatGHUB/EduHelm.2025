@@ -443,17 +443,16 @@ nav a.active i {
 .progress-bar div { 
     background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
     height: 100%; 
-    width: 70%; 
     border-radius: 10px;
     box-shadow: 0 0 15px var(--primary-color);
     animation: progressGrow 1.5s ease-out;
     position: relative;
     overflow: hidden;
+    transition: width 0.5s ease;
 }
 
 @keyframes progressGrow {
     from { width: 0%; }
-    to { width: 70%; }
 }
 
 .progress-bar div::after {
@@ -518,6 +517,8 @@ nav a.active i {
         <a href="{% url 'sample_home' %}" class="active"><i class="fas fa-home"></i> Dashboard</a>
         <a href="{% url 'course_list' %}"><i class="fas fa-book"></i> Courses</a>
         <a href="{% url 'my_courses' %}"><i class="fas fa-graduation-cap"></i> My Courses</a>
+        <a href="{% url 'schedule:task_list' %}"><i class="fas fa-tasks"></i> Tasks</a>
+        <a href="{% url 'study_schedule_calendar' %}"><i class="fas fa-calendar-alt"></i> Calendar</a>
         <a href="{% url 'study_dashboard' %}"><i class="fas fa-clock"></i> Study Tracker</a>
         <a href="{% url 'study_analytics' %}"><i class="fas fa-chart-line"></i> Analytics</a>
         <a href="{% url 'notes_list' %}"><i class="fas fa-sticky-note"></i> My Notes</a>
@@ -565,29 +566,37 @@ nav a.active i {
                 <button><i class="fas fa-paper-plane"></i> Ask AI</button>
             </div>
 
+            {% if upcoming_schedules %}
             <div class="card">
-                <h3><i class="fas fa-bell"></i> Reminder</h3>
-                <p><strong>Frontend Layout Task</strong> - Due in 2 hours</p>
-                <p style="color: var(--subtle-text); font-size:0.9em;">Don’t forget to finalize the CSS grid section.</p>
-            </div>
-
-            <div class="card">
-                <h3><i class="fas fa-calendar-alt"></i> Today’s Schedule</h3>
+                <h3><i class="fas fa-calendar-alt"></i> Today's Schedule</h3>
                 <ul class="schedule-list">
-                    <li>9:00 AM - Data Structures Revision</li>
-                    <li>11:00 AM - Django Project Work</li>
-                    <li>3:00 PM - Break / Relax</li>
-                    <li>5:00 PM - React Practice</li>
+                    {% for schedule in upcoming_schedules %}
+                    <li>{{ schedule.scheduled_start|date:"g:i A" }} - {{ schedule.title }}</li>
+                    {% endfor %}
                 </ul>
             </div>
+            {% else %}
+            <div class="card">
+                <h3><i class="fas fa-calendar-alt"></i> Today's Schedule</h3>
+                <p style="color: var(--subtle-text);">No scheduled events for today. <a href="{% url 'study_schedule_calendar' %}">Create your schedule</a> to see it here.</p>
+            </div>
+            {% endif %}
         </div>
 
         <div>
             <div class="card">
                 <h3><i class="fas fa-chart-line"></i> Progress</h3>
-                <p>Weekly Study Completion:</p>
-                <div class="progress-bar"><div></div></div>
-                <p class="streak">🔥 8 Day Streak</p>
+                {% if weekly_study_minutes > 0 %}
+                    <p>Weekly Study Time: {{ weekly_study_hours|floatformat:1 }} hours</p>
+                    <div class="progress-bar">
+                        <div style="width: {{ weekly_progress }}%"></div>
+                    </div>
+                    {% if study_streak > 0 %}
+                        <p class="streak">🔥 {{ study_streak }} Day Streak</p>
+                    {% endif %}
+                {% else %}
+                    <p style="color: var(--subtle-text);">No study sessions recorded yet. <a href="{% url 'study_dashboard' %}">Start your first session</a> to track your progress!</p>
+                {% endif %}
             </div>
 
             <div class="card">

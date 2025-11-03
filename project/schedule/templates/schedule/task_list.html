@@ -1,0 +1,456 @@
+{% extends "users/base.html" %}
+
+{% block title %}My Tasks | EduHelm{% endblock %}
+
+{% block content %}
+<style>
+    /* Back to Dashboard Button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #667eea;
+        text-decoration: none;
+        margin-bottom: 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 0 8px #667eea);
+    }
+
+    .back-btn:hover {
+        gap: 12px;
+        transform: translateX(-5px);
+    }
+
+    .tasks-container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 0 20px;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tasks-header {
+        text-align: center;
+        margin-bottom: 50px;
+        position: relative;
+    }
+
+    .tasks-header h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 10px;
+        animation: slideInDown 0.8s ease-out;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tasks-header p {
+        color: #6b7280;
+        font-size: 1.1rem;
+        animation: fadeIn 1s ease-out 0.3s both;
+    }
+
+    .add-task-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 32px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        text-decoration: none;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        transition: all 0.3s ease;
+        margin-top: 20px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .add-task-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.5s;
+    }
+
+    .add-task-btn:hover::before {
+        left: 100%;
+    }
+
+    .add-task-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+
+    .add-task-btn:active {
+        transform: translateY(-1px);
+    }
+
+    .tasks-grid {
+        display: grid;
+        gap: 20px;
+        animation: fadeIn 0.8s ease-out 0.2s both;
+    }
+
+    .task-card {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        animation: slideInUp 0.5s ease-out backwards;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .task-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        transition: width 0.3s ease;
+    }
+
+    .task-card:hover::before {
+        width: 100%;
+        opacity: 0.05;
+    }
+
+    .task-card:hover {
+        transform: translateY(-5px) scale(1.01);
+        box-shadow: 0 12px 40px rgba(102, 126, 234, 0.2);
+    }
+
+    .task-card.completed {
+        opacity: 0.7;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.05) 0%, rgba(5, 150, 105, 0.05) 100%);
+    }
+
+    .task-card.completed::before {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+
+    .task-card.overdue::before {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    }
+
+    .task-card.overdue {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.05) 0%, rgba(220, 38, 38, 0.05) 100%);
+    }
+
+    .task-checkbox {
+        flex-shrink: 0;
+    }
+
+    .toggle-complete-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 2rem;
+        transition: all 0.3s ease;
+        color: #d1d5db;
+        position: relative;
+    }
+
+    .toggle-complete-btn:hover {
+        transform: scale(1.2) rotate(10deg);
+    }
+
+    .toggle-complete-btn .completed {
+        color: #10b981;
+        animation: checkBounce 0.5s ease;
+    }
+
+    @keyframes checkBounce {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.3); }
+    }
+
+    .task-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .task-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 8px;
+        text-decoration: none;
+        display: block;
+        transition: color 0.3s ease;
+    }
+
+    .task-title:hover {
+        color: #667eea;
+    }
+
+    .task-card.completed .task-title {
+        text-decoration: line-through;
+        color: #9ca3af;
+    }
+
+    .task-meta {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        flex-wrap: wrap;
+        font-size: 0.95rem;
+        color: #6b7280;
+    }
+
+    .task-meta i {
+        margin-right: 5px;
+    }
+
+    .task-due {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 6px 12px;
+        background: rgba(102, 126, 234, 0.1);
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+
+    .task-card.overdue .task-due {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .task-actions {
+        display: flex;
+        gap: 10px;
+        flex-shrink: 0;
+    }
+
+    .action-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        font-size: 1.1rem;
+    }
+
+    .action-btn.edit {
+        background: rgba(59, 130, 246, 0.1);
+        color: #3b82f6;
+    }
+
+    .action-btn.edit:hover {
+        background: #3b82f6;
+        color: white;
+        transform: translateY(-3px) rotate(10deg);
+        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+    }
+
+    .action-btn.delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+    }
+
+    .action-btn.delete:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-3px) rotate(-10deg);
+        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        animation: fadeIn 1s ease-out;
+    }
+
+    .empty-state i {
+        font-size: 5rem;
+        color: #d1d5db;
+        margin-bottom: 20px;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .empty-state h3 {
+        font-size: 1.8rem;
+        color: #374151;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #6b7280;
+        font-size: 1.1rem;
+    }
+
+    /* Dark mode support */
+    [data-theme="dark"] .task-card {
+        background: rgba(31, 41, 55, 0.8);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+    }
+
+    [data-theme="dark"] .task-title {
+        color: #f3f4f6;
+    }
+
+    [data-theme="dark"] .task-meta {
+        color: #9ca3af;
+    }
+
+    [data-theme="dark"] .empty-state h3 {
+        color: #f3f4f6;
+    }
+
+    [data-theme="dark"] .empty-state p {
+        color: #9ca3af;
+    }
+
+    @media (max-width: 768px) {
+        .tasks-header h1 {
+            font-size: 2rem;
+        }
+
+        .task-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .task-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+</style>
+
+<div class="tasks-container">
+    <a href="{% url 'sample_home' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    
+    <div class="tasks-header">
+        <h1><i class="fas fa-tasks"></i> My Tasks</h1>
+        <p>Stay organized and track your assignments with ease</p>
+        <a href="{% url 'schedule:task_create' %}" class="add-task-btn">
+            <i class="fas fa-plus-circle"></i> Create New Task
+        </a>
+    </div>
+
+    <div class="tasks-grid">
+        {% if object_list %}
+            {% for task in object_list %}
+                <div class="task-card {% if task.is_completed %}completed{% elif task.due_date and not task.is_completed and task.due_date < current_time %}overdue{% endif %}" 
+                     style="animation-delay: calc({{ forloop.counter0 }} * 0.1s);">
+                    <div class="task-checkbox">
+                        <form action="{% url 'schedule:task_toggle' task.pk %}" method="POST">
+                            {% csrf_token %}
+                            <button type="submit" class="toggle-complete-btn">
+                                {% if task.is_completed %}
+                                    <i class="fas fa-check-circle completed"></i>
+                                {% else %}
+                                    <i class="far fa-circle pending"></i>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="task-content">
+                        <a href="{% url 'schedule:task_detail' task.pk %}" class="task-title">
+                            {{ task.title }}
+                        </a>
+                        <div class="task-meta">
+                            {% if task.due_date %}
+                                <span class="task-due">
+                                    <i class="fas fa-clock"></i>
+                                    {{ task.due_date|date:"M d, Y • g:i A" }}
+                                </span>
+                            {% else %}
+                                <span style="color: #9ca3af;">
+                                    <i class="fas fa-calendar-times"></i> No due date
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="task-actions">
+                        <a href="{% url 'schedule:task_update' task.pk %}" class="action-btn edit" title="Edit Task">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'schedule:task_delete' task.pk %}" class="action-btn delete" title="Delete Task">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No tasks yet!</h3>
+                <p>Create your first task to get started with your productivity journey.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    // Add filter for multiply
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scroll animation for task cards
+        const cards = document.querySelectorAll('.task-card');
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, { threshold: 0.1 });
+
+        cards.forEach(card => {
+            observer.observe(card);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,503 @@
+{% extends 'users/base.html' %}
+
+{% block extra_css %}
+<style>
+    /* Back to Dashboard Button */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: #667eea;
+        text-decoration: none;
+        margin-bottom: 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 0 8px #667eea);
+    }
+
+    .back-btn:hover {
+        gap: 12px;
+        transform: translateX(-5px);
+    }
+
+    .schedule-list-container {
+        max-width: 1200px;
+        margin: 50px auto;
+        padding: 0 20px;
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .schedule-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+        gap: 20px;
+        animation: slideInDown 0.8s ease-out;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .schedule-header h2 {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        position: relative;
+    }
+
+    .schedule-header h2::after {
+        content: '';
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #667eea, #764ba2);
+        border-radius: 2px;
+    }
+
+    .header-actions {
+        display: flex;
+        gap: 12px;
+    }
+
+    .btn-fancy {
+        padding: 12px 28px;
+        border-radius: 50px;
+        font-weight: 600;
+        font-size: 1.05rem;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-fancy::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.6s;
+    }
+
+    .btn-fancy:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary-fancy {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary-fancy:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 45px rgba(102, 126, 234, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary-fancy {
+        background: white;
+        color: #667eea;
+        border: 2px solid #667eea;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+    }
+
+    .btn-secondary-fancy:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-3px);
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 80px 20px;
+        background: white;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        animation: scaleIn 0.6s ease-out 0.2s both;
+    }
+
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .empty-state i {
+        font-size: 6rem;
+        color: #667eea;
+        margin-bottom: 25px;
+        opacity: 0.3;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-20px); }
+    }
+
+    .empty-state h3 {
+        font-size: 1.8rem;
+        color: #374151;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+
+    .empty-state p {
+        color: #6b7280;
+        font-size: 1.1rem;
+        margin-bottom: 30px;
+    }
+
+    .schedule-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 25px;
+        animation: fadeIn 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .schedule-card {
+        background: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        border-left: 5px solid;
+        animation: slideInUp 0.6s ease-out backwards;
+    }
+
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .schedule-card:nth-child(1) { 
+        border-left-color: #667eea;
+        animation-delay: 0.1s;
+    }
+    .schedule-card:nth-child(2) { 
+        border-left-color: #764ba2;
+        animation-delay: 0.15s;
+    }
+    .schedule-card:nth-child(3) { 
+        border-left-color: #f093fb;
+        animation-delay: 0.2s;
+    }
+    .schedule-card:nth-child(4) { 
+        border-left-color: #4facfe;
+        animation-delay: 0.25s;
+    }
+    .schedule-card:nth-child(n+5) { 
+        border-left-color: #667eea;
+        animation-delay: calc(0.3s + (var(--nth) * 0.05s));
+    }
+
+    .schedule-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+
+    .schedule-card-title {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .schedule-card-title i {
+        color: #667eea;
+        font-size: 1.3rem;
+    }
+
+    .schedule-card-time {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 12px;
+        font-weight: 500;
+    }
+
+    .schedule-card-time i {
+        color: #667eea;
+    }
+
+    .schedule-card-description {
+        color: #4b5563;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 20px;
+        border-top: 1px solid #f3f4f6;
+        padding-top: 15px;
+    }
+
+    .schedule-card-meta {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    .meta-badge {
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .meta-badge.duration {
+        background: rgba(102, 126, 234, 0.1);
+        color: #667eea;
+    }
+
+    .meta-badge.recurrence {
+        background: rgba(240, 147, 251, 0.1);
+        color: #764ba2;
+    }
+
+    .meta-badge.reminder {
+        background: rgba(16, 185, 129, 0.1);
+        color: #059669;
+    }
+
+    .schedule-card-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-sm-fancy {
+        padding: 8px 18px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: 2px solid;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        background: transparent;
+    }
+
+    .btn-edit {
+        border-color: #667eea;
+        color: #667eea;
+    }
+
+    .btn-edit:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .btn-delete {
+        border-color: #ef4444;
+        color: #ef4444;
+    }
+
+    .btn-delete:hover {
+        background: #ef4444;
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Dark mode */
+    [data-theme="dark"] .schedule-card,
+    [data-theme="dark"] .empty-state {
+        background: rgba(31, 41, 55, 0.95);
+        border: 1px solid rgba(75, 85, 99, 0.3);
+    }
+
+    [data-theme="dark"] .schedule-card-title {
+        color: #f3f4f6;
+    }
+
+    [data-theme="dark"] .schedule-card-time,
+    [data-theme="dark"] .schedule-card-description {
+        color: #d1d5db;
+    }
+
+    [data-theme="dark"] .empty-state h3 {
+        color: #f3f4f6;
+    }
+
+    [data-theme="dark"] .empty-state p {
+        color: #9ca3af;
+    }
+
+    @media (max-width: 768px) {
+        .schedule-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .schedule-header h2 {
+            font-size: 2.2rem;
+        }
+
+        .schedule-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .header-actions {
+            width: 100%;
+        }
+
+        .btn-fancy {
+            flex: 1;
+            justify-content: center;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="schedule-list-container">
+    <a href="{% url 'sample_home' %}" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    
+    <div class="schedule-header">
+        <h2><i class="fas fa-list-alt"></i> Your Schedule</h2>
+        <div class="header-actions">
+            <a class="btn-fancy btn-secondary-fancy" href="{% url 'study_schedule_calendar' %}">
+                <i class="fas fa-calendar-alt"></i> Calendar View
+            </a>
+            <a class="btn-fancy btn-primary-fancy" href="{% url 'study_schedule_create' %}">
+                <i class="fas fa-plus-circle"></i> Create Event
+            </a>
+        </div>
+    </div>
+
+    {% if schedules.count == 0 and schedules|length == 0 %}
+        <div class="empty-state">
+            <i class="fas fa-calendar-times"></i>
+            <h3>No Scheduled Events Yet</h3>
+            <p>Start organizing your study time by creating your first event!</p>
+            <a class="btn-fancy btn-primary-fancy" href="{% url 'study_schedule_create' %}">
+                <i class="fas fa-plus-circle"></i> Create Your First Event
+            </a>
+        </div>
+    {% else %}
+        <div class="schedule-grid">
+            {% for s in schedules %}
+                <div class="schedule-card" style="--nth: {{ forloop.counter }}">
+                    <div class="schedule-card-title">
+                        <i class="fas fa-calendar-check"></i>
+                        {{ s.title }}
+                    </div>
+                    
+                    <div class="schedule-card-time">
+                        <i class="far fa-clock"></i>
+                        {{ s.scheduled_start|date:"M d, Y - g:i A" }}
+                        {% if s.scheduled_end %}
+                            <span>→ {{ s.scheduled_end|date:"g:i A" }}</span>
+                        {% endif %}
+                    </div>
+
+                    {% if s.duration_minutes or s.recurrence != 'none' or s.reminder_minutes_before %}
+                        <div class="schedule-card-meta">
+                            {% if s.duration_minutes %}
+                                <span class="meta-badge duration">
+                                    <i class="fas fa-hourglass-half"></i>
+                                    {{ s.duration_minutes }} mins
+                                </span>
+                            {% endif %}
+                            {% if s.recurrence != 'none' %}
+                                <span class="meta-badge recurrence">
+                                    <i class="fas fa-redo"></i>
+                                    {{ s.recurrence|title }}
+                                </span>
+                            {% endif %}
+                            {% if s.reminder_minutes_before %}
+                                <span class="meta-badge reminder">
+                                    <i class="fas fa-bell"></i>
+                                    {{ s.reminder_minutes_before }} min alert
+                                </span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+
+                    {% if s.description %}
+                        <div class="schedule-card-description">
+                            {{ s.description|truncatechars:150 }}
+                        </div>
+                    {% endif %}
+
+                    <div class="schedule-card-actions">
+                        <a class="btn-sm-fancy btn-edit" href="{% url 'study_schedule_edit' s.id %}">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn-sm-fancy btn-delete" 
+                                onclick="if(confirm('Delete this event?')){fetch('{% url 'study_schedule_delete' s.id %}', {method:'POST', headers:{'X-CSRFToken': '{{ csrf_token }}'}}).then(()=>location.reload())}">
+                            <i class="fas fa-trash-alt"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

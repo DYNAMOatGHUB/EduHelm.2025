@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('sample.urls')),
     path('courses/', include('courses.urls')),
+    path('schedule/', include('schedule.urls')),  # Task management URLs
     path('', include('users.urls')),  # Study tracking URLs
     path('register/', user_views.register, name='register'),
     path('logout/',auth_views.LogoutView.as_view(),name='logout'),

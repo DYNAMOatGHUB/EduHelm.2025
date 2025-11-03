@@ -1,0 +1,13 @@
+{% extends 'users/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h3>Delete Scheduled Event</h3>
+    <p>Are you sure you want to delete "{{ schedule.title }}" scheduled at {{ schedule.scheduled_start }}?</p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn btn-danger" type="submit">Yes, delete</button>
+        <a class="btn btn-secondary" href="{% url 'study_schedule' %}">Cancel</a>
+    </form>
+</div>
+{% endblock %}

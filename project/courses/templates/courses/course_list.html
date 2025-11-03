@@ -5,26 +5,116 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Courses | EduHelm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* Theme Variables */
         :root {
-            --bg-color: #f7f9fc;
-            --card-bg: #ffffff;
-            --text-color: #1a1a1a;
-            --subtle-text: #606060;
-            --primary-color: #4CAF50;
-            --accent-color: #007bff;
-            --border-color: #e0e0e0;
-            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --transition-speed: 0.3s;
         }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
         
-        .container { max-width: 1200px; margin: 0 auto; }
+        [data-theme="light"] {
+            --bg-gradient-1: #f0f4ff;
+            --bg-gradient-2: #e0e7ff;
+            --bg-gradient-3: #fce7f3;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --text-color: #1a202c;
+            --subtle-text: #4a5568;
+            --primary-color: #3b82f6;
+            --accent-color: #ec4899;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
         
-        .header { text-align: center; margin-bottom: 40px; }
-        .header h1 { font-size: 2.5em; margin-bottom: 10px; }
-        .header p { color: var(--subtle-text); font-size: 1.1em; }
+        [data-theme="dark"] {
+            --bg-gradient-1: #0a0e27;
+            --bg-gradient-2: #1a1f3a;
+            --bg-gradient-3: #2a1a3f;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --text-color: #ffffff;
+            --subtle-text: #b8bfd8;
+            --primary-color: #00eaff;
+            --accent-color: #ff60c0;
+            --border-color: rgba(0, 234, 255, 0.1);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            font-family: 'Poppins', sans-serif;
+            transition: background-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        border-color var(--transition-speed) ease;
+        }
+        
+        body { 
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+            color: var(--text-color); 
+            min-height: 100vh; 
+            padding: 30px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* No custom cursor elements needed - using particle trail */
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes bookSpin {
+            0%, 100% {
+                transform: rotateY(0deg) translateY(0);
+            }
+            50% {
+                transform: rotateY(180deg) translateY(-10px);
+            }
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
+        }
+        
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+        }
+        .header h1 { 
+            font-size: 3em; 
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .header h1 i {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: bookSpin 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 20px var(--primary-color));
+        }
+        .header p { 
+            color: var(--subtle-text); 
+            font-size: 1.1em; 
+        }
         
         .back-btn { 
             display: inline-flex; 
@@ -34,19 +124,27 @@
             text-decoration: none; 
             margin-bottom: 20px;
             font-weight: 500;
-            transition: gap 0.2s;
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 0 8px var(--accent-color));
         }
-        .back-btn:hover { gap: 12px; }
+        .back-btn:hover { 
+            gap: 12px;
+            transform: translateX(-5px);
+        }
         
         .filters {
             background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            padding: 25px;
+            border-radius: 18px;
             box-shadow: var(--shadow);
             margin-bottom: 30px;
             display: flex;
             gap: 15px;
             flex-wrap: wrap;
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.7s ease-out backwards;
+            animation-delay: 0.1s;
         }
         
         .filter-group {
@@ -58,15 +156,26 @@
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
+            color: var(--text-color);
         }
         
         .filter-group select,
         .filter-group input {
             width: 100%;
             padding: 10px 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
             font-size: 1em;
+            background: var(--card-bg);
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 234, 255, 0.1);
         }
         
         .course-grid {
@@ -77,16 +186,44 @@
         
         .course-card {
             background: var(--card-bg);
-            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            border-radius: 18px;
             box-shadow: var(--shadow);
             overflow: hidden;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
+            border: 1px solid var(--border-color);
+            animation: fadeInUp 0.6s ease-out backwards;
+            position: relative;
         }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 234, 255, 0.1), transparent);
+            transition: left 0.6s ease;
+            z-index: 1;
+        }
+
+        .course-card:hover::before {
+            left: 100%;
+        }
+
+        .course-card:nth-child(1) { animation-delay: 0.2s; }
+        .course-card:nth-child(2) { animation-delay: 0.3s; }
+        .course-card:nth-child(3) { animation-delay: 0.4s; }
+        .course-card:nth-child(4) { animation-delay: 0.5s; }
+        .course-card:nth-child(5) { animation-delay: 0.6s; }
+        .course-card:nth-child(6) { animation-delay: 0.7s; }
         
         .course-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 20px 50px rgba(0, 234, 255, 0.3);
+            border-color: rgba(0, 234, 255, 0.5);
         }
         
         .course-thumbnail {
@@ -98,27 +235,50 @@
             justify-content: center;
             color: white;
             font-size: 3em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-thumbnail::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent,
+                rgba(255, 255, 255, 0.1),
+                transparent
+            );
+            animation: shimmer 3s infinite;
         }
         
         .course-thumbnail img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            position: relative;
+            z-index: 1;
         }
         
         .course-content {
             padding: 20px;
+            position: relative;
+            z-index: 2;
         }
         
         .course-category {
             display: inline-block;
-            background: var(--bg-color);
-            color: var(--accent-color);
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
             padding: 5px 12px;
             border-radius: 20px;
             font-size: 0.85em;
             font-weight: 600;
             margin-bottom: 10px;
+            box-shadow: 0 3px 10px rgba(0, 234, 255, 0.3);
         }
         
         .course-title {
@@ -193,7 +353,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <div class="container">
         <a href="{% url 'sample_home' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -276,8 +436,69 @@
             </div>
         {% endif %}
     </div>
+
+    <!-- Custom Cursor Elements -->
+    <div class="cursor"></div>
+    <div class="cursor-follower"></div>
     
     <script>
+        // ========== PARTICLE TRAIL EFFECT ==========
+        let particles = [];
+        const particleCount = 20;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.opacity = 1;
+                this.color = Math.random() > 0.5 ? '#ff60c0' : '#00eaff';
+                
+                this.element = document.createElement('div');
+                this.element.style.position = 'fixed';
+                this.element.style.width = this.size + 'px';
+                this.element.style.height = this.size + 'px';
+                this.element.style.borderRadius = '50%';
+                this.element.style.background = this.color;
+                this.element.style.pointerEvents = 'none';
+                this.element.style.zIndex = '9998';
+                this.element.style.boxShadow = `0 0 10px ${this.color}`;
+                document.body.appendChild(this.element);
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+                
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.style.opacity = this.opacity;
+                
+                if (this.opacity <= 0) {
+                    this.element.remove();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.8) {
+                particles.push(new Particle(e.clientX, e.clientY));
+            }
+            
+            particles = particles.filter(particle => particle.update());
+            
+            if (particles.length > particleCount) {
+                const removed = particles.shift();
+                removed.element.remove();
+            }
+        });
+
+        // Filter function
         function applyFilters() {
             const search = document.getElementById('search').value;
             const category = document.getElementById('category').value;
@@ -290,6 +511,10 @@
             
             window.location.href = url;
         }
+
+        // Theme Toggle Support
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
     </script>
 </body>
 </html>

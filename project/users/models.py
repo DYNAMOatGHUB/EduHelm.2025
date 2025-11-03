@@ -146,6 +146,38 @@ class StudyGoal(models.Model):
         ordering = ['-created_at']
 
 
+class StudySchedule(models.Model):
+    """Scheduled study events or reminders (calendar entries)."""
+    RECURRENCE_CHOICES = [
+        ('none', 'None'),
+        ('daily', 'Daily'),
+        ('weekly', 'Weekly'),
+        ('monthly', 'Monthly'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='study_schedules')
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    scheduled_start = models.DateTimeField()
+    scheduled_end = models.DateTimeField(null=True, blank=True)
+    duration_minutes = models.PositiveIntegerField(null=True, blank=True, help_text='Optional duration in minutes')
+
+    is_recurring = models.BooleanField(default=False)
+    recurrence = models.CharField(max_length=10, choices=RECURRENCE_CHOICES, default='none')
+    reminder_minutes_before = models.PositiveIntegerField(default=15, help_text='Minutes before start to remind')
+
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.title} @ {self.scheduled_start.strftime('%Y-%m-%d %H:%M')}"
+
+    class Meta:
+        verbose_name = 'Study Schedule'
+        verbose_name_plural = 'Study Schedules'
+        ordering = ['scheduled_start']
+
+
 class NoteCategory(models.Model):
     """Categories for organizing study notes"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='note_categories')

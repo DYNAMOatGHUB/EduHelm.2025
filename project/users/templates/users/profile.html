@@ -5,36 +5,69 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | EduHelm</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
+        /* Theme Variables */
         :root {
-            --bg-color: #f7f9fc;
-            --card-bg: #ffffff;
-            --sidebar-bg: #eef1f6;
-            --text-color: #1a1a1a;
-            --subtle-text: #636b75;
-            --primary-color: #4CAF50;
-            --accent-color: #007bff;
+            --transition-speed: 0.3s;
+        }
+        
+        [data-theme="light"] {
+            --bg-gradient-1: #f0f4ff;
+            --bg-gradient-2: #e0e7ff;
+            --bg-gradient-3: #fce7f3;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --sidebar-bg: rgba(238, 241, 246, 0.95);
+            --text-color: #1a202c;
+            --subtle-text: #4a5568;
+            --primary-color: #3b82f6;
+            --accent-color: #ec4899;
             --danger-color: #dc3545;
-            --border-color: rgba(0,0,0,0.08);
+            --border-color: rgba(0, 0, 0, 0.1);
             --shadow: 0 6px 20px rgba(15,23,42,0.08);
             --radius: 16px;
         }
+        
+        [data-theme="dark"] {
+            --bg-gradient-1: #0a0e27;
+            --bg-gradient-2: #1a1f3a;
+            --bg-gradient-3: #2a1a3f;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --sidebar-bg: rgba(20, 25, 45, 0.95);
+            --text-color: #ffffff;
+            --subtle-text: #b8bfd8;
+            --primary-color: #00eaff;
+            --accent-color: #ff60c0;
+            --danger-color: #ff6b6b;
+            --border-color: rgba(0, 234, 255, 0.1);
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            --radius: 16px;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Inter, Segoe UI, sans-serif;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        border-color var(--transition-speed) ease;
         }
         body {
             display: flex;
             min-height: 100vh;
-            background-color: var(--bg-color);
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
             color: var(--text-color);
+            cursor: none;
         }
+
+        /* No custom cursor elements needed - using particle trail */
+        
         .sidebar {
             width: 260px;
             background-color: var(--sidebar-bg);
+            backdrop-filter: blur(10px);
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
@@ -43,6 +76,7 @@
             top: 0;
             height: 100vh;
             padding: 32px 24px;
+            border-right: 1px solid var(--border-color);
         }
         .logo {
             font-size: 1.8rem;
@@ -134,9 +168,11 @@
             gap: 32px;
             padding: 32px;
             background-color: var(--card-bg);
+            backdrop-filter: blur(10px);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
             margin-bottom: 32px;
+            border: 1px solid var(--border-color);
         }
         .avatar {
             width: 120px;
@@ -268,7 +304,7 @@
         }
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <div class="sidebar">
         <div>
             <div class="logo">EduHelm.</div>
@@ -335,5 +371,67 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // ========== PARTICLE TRAIL EFFECT ==========
+        let particles = [];
+        const particleCount = 20;
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.opacity = 1;
+                this.color = Math.random() > 0.5 ? '#ff60c0' : '#00eaff';
+                
+                this.element = document.createElement('div');
+                this.element.style.position = 'fixed';
+                this.element.style.width = this.size + 'px';
+                this.element.style.height = this.size + 'px';
+                this.element.style.borderRadius = '50%';
+                this.element.style.background = this.color;
+                this.element.style.pointerEvents = 'none';
+                this.element.style.zIndex = '9998';
+                this.element.style.boxShadow = `0 0 10px ${this.color}`;
+                document.body.appendChild(this.element);
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+                
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.style.opacity = this.opacity;
+                
+                if (this.opacity <= 0) {
+                    this.element.remove();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.8) {
+                particles.push(new Particle(e.clientX, e.clientY));
+            }
+            
+            particles = particles.filter(particle => particle.update());
+            
+            if (particles.length > particleCount) {
+                const removed = particles.shift();
+                removed.element.remove();
+            }
+        });
+
+        // Theme Toggle Support
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.body.setAttribute('data-theme', savedTheme);
+    </script>
 </body>
 </html>

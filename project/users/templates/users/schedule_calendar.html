@@ -1,0 +1,956 @@
+{% extends 'users/base.html' %}
+
+{% block extra_css %}
+<!-- FullCalendar CSS -->
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.css" rel="stylesheet" />
+<!-- Flatpickr CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+  /* ===== FANCY CALENDAR STYLES v2.1 ===== */
+  /* Updated: {{ "now"|date:"Y-m-d H:i:s" }} */
+
+  /* Custom Cursor */
+  body {
+    cursor: none !important;
+  }
+
+  .cursor {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #00eaff;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 99999;
+    transition: all 0.15s ease;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 20px #00eaff;
+  }
+
+  .cursor-follower {
+    width: 8px;
+    height: 8px;
+    background: #ff60c0;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 99998;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 15px #ff60c0;
+  }
+
+  .cursor.expand {
+    transform: translate(-50%, -50%) scale(2);
+    background: rgba(0, 234, 255, 0.1);
+  }
+
+  /* Back to Dashboard Button */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #667eea;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    filter: drop-shadow(0 0 8px #667eea);
+  }
+
+  .back-btn:hover {
+    gap: 12px;
+    transform: translateX(-5px);
+  }
+  
+  body .calendar-container {
+    max-width: 1200px !important;
+    margin: 30px auto !important;
+    padding: 0 20px !important;
+    animation: fadeInUp 0.8s ease-out !important;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .calendar-header {
+    text-align: center;
+    margin-bottom: 30px;
+    animation: slideInDown 0.8s ease-out;
+  }
+
+  @keyframes slideInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .calendar-header h1 {
+    font-size: 2.2rem !important;
+    font-weight: 700 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+    margin-bottom: 8px !important;
+    position: relative !important;
+    display: inline-block !important;
+  }
+
+  .calendar-header h1 i {
+    font-size: 1.8rem;
+  }
+
+  .calendar-header h1::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    border-radius: 2px;
+    animation: expandWidth 1s ease-out 0.5s both;
+  }
+
+  @keyframes expandWidth {
+    from { width: 0; }
+    to { width: 80px; }
+  }
+
+  .calendar-header p {
+    color: #6b7280;
+    font-size: 0.95rem;
+    margin-top: 12px;
+  }
+
+  .calendar-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 18px;
+    animation: fadeIn 1s ease-out 0.3s both;
+  }
+
+  .calendar-btn {
+    padding: 10px 22px;
+    border-radius: 25px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .calendar-btn i {
+    font-size: 0.85rem;
+  }
+
+  .calendar-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.6s;
+  }
+
+  .calendar-btn:hover::before {
+    left: 100%;
+  }
+
+  .calendar-btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  .calendar-btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 45px rgba(102, 126, 234, 0.4);
+  }
+
+  .calendar-btn-secondary {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.15);
+  }
+
+  .calendar-btn-secondary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  }
+
+  .calendar-wrapper {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    position: relative;
+    overflow: hidden;
+    animation: scaleIn 0.6s ease-out 0.2s both;
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  .calendar-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    animation: slideRight 2s ease-in-out infinite;
+  }
+
+  @keyframes slideRight {
+    0%, 100% { transform: translateX(-100%); }
+    50% { transform: translateX(100%); }
+  }
+
+  /* FullCalendar Custom Styling */
+  #calendar {
+    margin-top: 15px;
+  }
+
+  .fc {
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  .fc-toolbar-title {
+    font-size: 1.5rem !important;
+    font-weight: 700 !important;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .fc-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    padding: 8px 16px !important;
+    border-radius: 10px !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 3px 12px rgba(102, 126, 234, 0.2) !important;
+  }
+
+  .fc-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 5px 16px rgba(102, 126, 234, 0.3) !important;
+  }
+
+  .fc-button:active {
+    transform: translateY(0) !important;
+  }
+
+  .fc-button-active {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%) !important;
+  }
+
+  .fc-event {
+    border: none !important;
+    border-radius: 6px !important;
+    padding: 3px 6px !important;
+    font-weight: 600 !important;
+    font-size: 0.85rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .fc-event:hover {
+    transform: translateY(-1px) scale(1.03) !important;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15) !important;
+    z-index: 10 !important;
+  }
+
+  .fc-daygrid-day:hover {
+    background: rgba(102, 126, 234, 0.05);
+    transition: background 0.3s ease;
+  }
+
+  .fc-day-today {
+    background: rgba(102, 126, 234, 0.1) !important;
+  }
+
+  /* Modal Styling */
+  #scheduleModal {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #scheduleModal .modal-dialog {
+    position: relative;
+    margin: 0 auto;
+  }
+
+  .modal-content {
+    border-radius: 20px !important;
+    border: none !important;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2) !important;
+    animation: modalSlideIn 0.4s ease-out;
+    backdrop-filter: blur(10px);
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-30px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  .modal-dialog {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 3.5rem);
+    margin: 1.75rem auto !important;
+    max-width: 500px !important;
+  }
+
+  .modal.fade .modal-dialog {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+
+  .modal.show .modal-dialog {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 18px 24px;
+    border: none;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { left: -100%; }
+    50% { left: 100%; }
+  }
+
+  .modal-header h5 {
+    font-weight: 700;
+    font-size: 1.15rem;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .modal-header h5::before {
+    content: '📅';
+    font-size: 1.3rem;
+  }
+
+  .modal-header .close {
+    color: white;
+    opacity: 0.9;
+    text-shadow: none;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-header .close:hover {
+    opacity: 1;
+    transform: rotate(90deg);
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .modal-body {
+    padding: 24px;
+    background: linear-gradient(to bottom, #ffffff 0%, #f9fafb 100%);
+  }
+
+  .modal-body .form-group {
+    margin-bottom: 16px;
+    animation: fadeInUp 0.5s ease-out backwards;
+  }
+
+  .modal-body .form-group:nth-child(1) { animation-delay: 0.1s; }
+  .modal-body .form-group:nth-child(2) { animation-delay: 0.15s; }
+  .modal-body .form-group:nth-child(3) { animation-delay: 0.2s; }
+  .modal-body .form-group:nth-child(4) { animation-delay: 0.25s; }
+  .modal-body .form-group:nth-child(5) { animation-delay: 0.3s; }
+  .modal-body .form-group:nth-child(6) { animation-delay: 0.35s; }
+
+  .modal-body label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.75rem;
+  }
+
+  .modal-body label::before {
+    content: '';
+    width: 3px;
+    height: 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 2px;
+  }
+
+  .modal-body input,
+  .modal-body textarea,
+  .modal-body select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    background: white;
+    font-family: inherit;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  }
+
+  .modal-body input:focus,
+  .modal-body textarea:focus,
+  .modal-body select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1), 0 4px 12px rgba(102, 126, 234, 0.15);
+    transform: translateY(-2px);
+  }
+
+  .modal-body textarea {
+    min-height: 85px;
+    resize: vertical;
+    line-height: 1.5;
+  }
+
+  .modal-body .form-row {
+    display: flex;
+    gap: 12px;
+  }
+
+  .modal-body .form-row .form-group {
+    flex: 1;
+  }
+
+  .modal-footer {
+    padding: 16px 24px;
+    border-top: 2px solid #f3f4f6;
+    animation: fadeIn 0.6s ease-out 0.4s both;
+    background: #fafbfc;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .modal-footer .btn {
+    padding: 10px 28px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .modal-footer .btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  .modal-footer .btn:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  .modal-footer .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+
+  .modal-footer .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  }
+
+  .modal-footer .btn-danger {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+  }
+
+  .modal-footer .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(239, 68, 68, 0.5);
+  }
+
+  .modal-footer .btn-secondary {
+    background: white;
+    color: #6b7280;
+    border: 2px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .modal-footer .btn-secondary:hover {
+    background: #f9fafb;
+    border-color: #d1d5db;
+    transform: translateY(-1px);
+  }
+
+  /* Modal backdrop enhancement */
+  .modal-backdrop.show {
+    opacity: 0.6;
+    backdrop-filter: blur(4px);
+  }
+
+  /* Dark mode support */
+  [data-theme="dark"] .calendar-wrapper {
+    background: rgba(31, 41, 55, 0.9);
+    border: 1px solid rgba(75, 85, 99, 0.3);
+  }
+
+  [data-theme="dark"] .calendar-header p {
+    color: #9ca3af;
+  }
+
+  [data-theme="dark"] .fc {
+    color: #f3f4f6;
+  }
+
+  [data-theme="dark"] .fc-daygrid-day:hover {
+    background: rgba(102, 126, 234, 0.1);
+  }
+
+  [data-theme="dark"] .modal-content {
+    background: #1f2937;
+    color: #f3f4f6;
+  }
+
+  [data-theme="dark"] .modal-body label {
+    color: #f3f4f6;
+  }
+
+  [data-theme="dark"] .modal-body input,
+  [data-theme="dark"] .modal-body textarea,
+  [data-theme="dark"] .modal-body select {
+    background: rgba(17, 24, 39, 0.5);
+    border-color: rgba(75, 85, 99, 0.5);
+    color: #f3f4f6;
+  }
+
+  @media (max-width: 768px) {
+    .calendar-header h1 {
+      font-size: 1.8rem !important;
+    }
+    
+    .calendar-wrapper {
+      padding: 20px;
+    }
+
+    .calendar-actions {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .calendar-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .fc-toolbar-title {
+      font-size: 1.2rem !important;
+    }
+
+    .fc-button {
+      padding: 6px 12px !important;
+      font-size: 0.8rem !important;
+    }
+
+    .modal-dialog {
+      margin: 10px;
+      max-width: calc(100% - 20px) !important;
+    }
+
+    .modal-body {
+      padding: 18px;
+    }
+
+    .modal-body .form-row {
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .modal-footer {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .modal-footer .btn {
+      width: 100%;
+    }
+  }
+
+  /* Enhance form field icons */
+  .modal-body input[name="title"] {
+    background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23667eea"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+    padding-right: 40px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Custom Cursor Elements -->
+<div class="cursor"></div>
+<div class="cursor-follower"></div>
+
+<div class="calendar-container">
+  <a href="{% url 'sample_home' %}" class="back-btn">
+    <i class="fas fa-arrow-left"></i> Back to Dashboard
+  </a>
+  
+  <div class="calendar-header">
+    <h1><i class="fas fa-calendar-alt"></i> My Calendar</h1>
+    <p>Plan your study schedule and stay organized with visual timeline</p>
+    <div class="calendar-actions">
+      <a class="calendar-btn calendar-btn-secondary" href="{% url 'study_schedule' %}">
+        <i class="fas fa-list"></i> List View
+      </a>
+      <a class="calendar-btn calendar-btn-primary" href="{% url 'study_schedule_create' %}">
+        <i class="fas fa-plus-circle"></i> Quick Add Event
+      </a>
+    </div>
+  </div>
+
+  <div class="calendar-wrapper">
+    <div id="calendar"></div>
+  </div>
+</div>
+
+<!-- Modal for create/edit -->
+<div class="modal fade" id="scheduleModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 500px; margin: 1.75rem auto;">
+    <div class="modal-content">
+      <form id="modalForm" method="post">
+        {% csrf_token %}
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalTitle">Create Event</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="modalScheduleId" />
+          <div class="form-group">
+            <label>Title</label>
+            <input id="modalTitleInput" name="title" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label>Description</label>
+            <textarea id="modalDescription" name="description" class="form-control"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Start</label>
+            <input id="modalStart" name="scheduled_start" class="form-control" placeholder="YYYY-MM-DDTHH:MM" />
+          </div>
+          <div class="form-group">
+            <label>End (optional)</label>
+            <input id="modalEnd" name="scheduled_end" class="form-control" placeholder="YYYY-MM-DDTHH:MM" />
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label>Duration (mins)</label>
+              <input id="modalDuration" name="duration_minutes" type="number" class="form-control" />
+            </div>
+            <div class="form-group col-md-6">
+              <label>Recurrence</label>
+              <select id="modalRecurrence" name="recurrence" class="form-control">
+                <option value="none">None</option>
+                <option value="daily">Daily</option>
+                <option value="weekly">Weekly</option>
+                <option value="monthly">Monthly</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Reminder (mins before)</label>
+            <input id="modalReminder" name="reminder_minutes_before" type="number" class="form-control" value="15" />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" id="modalDeleteBtn" style="display:none">Delete</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<!-- FullCalendar JS -->
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/main.min.js"></script>
+<!-- Flatpickr JS for date/time picker -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const csrfToken = '{{ csrf_token }}';
+
+    // Initialize flatpickr for start and end date/time inputs
+    const startPicker = flatpickr("#modalStart", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      time_24hr: true,
+      minuteIncrement: 15
+    });
+
+    const endPicker = flatpickr("#modalEnd", {
+      enableTime: true,
+      dateFormat: "Y-m-d H:i",
+      time_24hr: true,
+      minuteIncrement: 15
+    });
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      selectable: true,
+      editable: false,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: {
+        url: '{% url "api_schedule_events" %}',
+        failure: function() { alert('There was an error while fetching events.'); }
+      },
+      select: function(info) {
+        // open modal for create
+        openModalForCreate(info.startStr);
+      },
+      eventClick: function(info) {
+        // open modal for edit
+        openModalForEdit(info.event.id);
+      }
+    });
+
+    calendar.render();
+
+    function openModalForCreate(startStr){
+      document.getElementById('modalTitle').innerText = 'Create Event';
+      document.getElementById('modalScheduleId').value = '';
+      document.getElementById('modalTitleInput').value = '';
+      document.getElementById('modalDescription').value = '';
+      
+      // Format start for flatpickr (YYYY-MM-DD HH:MM)
+      const formattedStart = startStr.substring(0,10) + ' ' + (startStr.length > 10 ? startStr.substring(11,16) : '09:00');
+      startPicker.setDate(formattedStart);
+      endPicker.clear();
+      
+      document.getElementById('modalDuration').value = '';
+      document.getElementById('modalRecurrence').value = 'none';
+      document.getElementById('modalReminder').value = 15;
+      document.getElementById('modalDeleteBtn').style.display = 'none';
+      $('#scheduleModal').modal('show');
+    }
+
+    function openModalForEdit(id){
+      fetch('{% url "api_schedule_events" %}')
+        .then(r=>r.json())
+        .then(events=>{
+          const ev = events.find(e=>String(e.id) === String(id));
+          if(!ev) { alert('Event not found'); return; }
+          
+          document.getElementById('modalTitle').innerText = 'Edit Event';
+          document.getElementById('modalScheduleId').value = ev.id;
+          document.getElementById('modalTitleInput').value = ev.title;
+          document.getElementById('modalDescription').value = ev.description || '';
+          
+          // Parse ISO and set flatpickr date/time
+          if(ev.start){
+            const startDt = ev.start.substring(0,10) + ' ' + ev.start.substring(11,16);
+            startPicker.setDate(startDt);
+          }
+          if(ev.end){
+            const endDt = ev.end.substring(0,10) + ' ' + ev.end.substring(11,16);
+            endPicker.setDate(endDt);
+          } else {
+            endPicker.clear();
+          }
+          
+          document.getElementById('modalDuration').value = ev.duration_minutes || '';
+          document.getElementById('modalRecurrence').value = ev.recurrence || 'none';
+          document.getElementById('modalReminder').value = ev.reminder_minutes_before || 15;
+          document.getElementById('modalDeleteBtn').style.display = 'inline-block';
+          $('#scheduleModal').modal('show');
+        });
+    }
+
+    // Submit handler for modal form
+    document.getElementById('modalForm').addEventListener('submit', function(e){
+      e.preventDefault();
+      const id = document.getElementById('modalScheduleId').value;
+      const payload = new FormData(this);
+      
+      // Convert flatpickr format to ISO for backend (YYYY-MM-DDTHH:MM)
+      const startVal = document.getElementById('modalStart').value;
+      const endVal = document.getElementById('modalEnd').value;
+      
+      if(startVal){
+        payload.set('scheduled_start', startVal.replace(' ', 'T'));
+      }
+      if(endVal){
+        payload.set('scheduled_end', endVal.replace(' ', 'T'));
+      }
+
+      let url = '{% url "study_schedule_create" %}';
+      if(id){
+        url = '{% url "study_schedule_edit" 0 %}'.replace('/0/','/'+id+'/');
+      }
+
+      fetch(url, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrfToken},
+        body: payload
+      }).then(r=>{
+        if(r.redirected){ window.location.reload(); }
+        else { calendar.refetchEvents(); $('#scheduleModal').modal('hide'); }
+      }).catch(err=>{ alert('Error saving event'); console.error(err); });
+    });
+
+    // Delete button
+    document.getElementById('modalDeleteBtn').addEventListener('click', function(){
+      const id = document.getElementById('modalScheduleId').value;
+      if(!id) return;
+      if(!confirm('Delete this event?')) return;
+      const url = '{% url "study_schedule_delete" 0 %}'.replace('/0/','/'+id+'/');
+      fetch(url, {method:'POST', headers: {'X-CSRFToken': csrfToken}})
+        .then(r=>{ window.location.reload(); })
+        .catch(err=>{ alert('Error deleting event'); console.error(err); });
+    });
+
+  });
+
+  // Custom Cursor
+  const cursor = document.querySelector('.cursor');
+  const follower = document.querySelector('.cursor-follower');
+  
+  if (cursor && follower) {
+    let mouseX = 0, mouseY = 0;
+    let cursorX = 0, cursorY = 0;
+    let followerX = 0, followerY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function animate() {
+      let dx = mouseX - cursorX;
+      let dy = mouseY - cursorY;
+      cursorX += dx * 0.3;
+      cursorY += dy * 0.3;
+      cursor.style.left = cursorX + 'px';
+      cursor.style.top = cursorY + 'px';
+
+      let fdx = mouseX - followerX;
+      let fdy = mouseY - followerY;
+      followerX += fdx * 0.15;
+      followerY += fdy * 0.15;
+      follower.style.left = followerX + 'px';
+      follower.style.top = followerY + 'px';
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    const hoverElements = document.querySelectorAll('a, button, .fc-event, input, select');
+    hoverElements.forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
+    });
+  }
+</script>
+{% endblock %}
