@@ -21,6 +21,8 @@ db.sqlite3
 db.sqlite3-journal
 *.sqlite
 *.sqlite3
+.env
+staticfiles/
 
 # Media files (uploaded by users)
 media/
