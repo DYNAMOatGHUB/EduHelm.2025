@@ -63,44 +63,6 @@
             min-height: 100vh;
         }
         
-        /* Custom Cursor */
-        .custom-cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--primary-color);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 99999;
-            transition: all 0.1s ease;
-            box-shadow: 0 0 20px var(--primary-color), inset 0 0 10px var(--primary-color);
-            animation: pulse-cursor 2s infinite;
-        }
-        
-        .custom-cursor-dot {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: var(--accent-color);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 100000;
-            transition: all 0.05s ease;
-            box-shadow: 0 0 15px var(--accent-color);
-        }
-        
-        .custom-cursor.hover {
-            transform: scale(2);
-            background: var(--hover-bg);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 30px var(--accent-color), inset 0 0 15px var(--accent-color);
-        }
-        
-        @keyframes pulse-cursor {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.6; }
-        }
-        
         /* Global Entrance Animations */
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(40px); }
@@ -252,9 +214,6 @@
     {% endblock %}
 </head>
 <body data-theme="dark" class="{% block body_class %}{% endblock %}">
-    <!-- Custom Cursor Elements -->
-    <div class="custom-cursor"></div>
-    <div class="custom-cursor-dot"></div>
     
     {% block content %}{% endblock %}
     
@@ -348,33 +307,6 @@
                 setTimeout(() => ripple.remove(), 600);
             });
         }
-        
-        // ========== CUSTOM CURSOR ==========
-        const cursor = document.querySelector('.custom-cursor');
-        const cursorDot = document.querySelector('.custom-cursor-dot');
-        
-        document.addEventListener('mousemove', (e) => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-            cursorDot.style.left = e.clientX + 'px';
-            cursorDot.style.top = e.clientY + 'px';
-        });
-        
-        // Hover effect on interactive elements
-        const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, .clickable');
-        interactiveElements.forEach(el => {
-            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-        });
-        
-        document.addEventListener('mouseleave', () => {
-            cursor.style.opacity = '0';
-            cursorDot.style.opacity = '0';
-        });
-        document.addEventListener('mouseenter', () => {
-            cursor.style.opacity = '1';
-            cursorDot.style.opacity = '1';
-        });
         
         // ========== PARTICLE TRAIL ==========
         let particles = [];

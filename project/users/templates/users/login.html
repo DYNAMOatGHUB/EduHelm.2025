@@ -12,44 +12,6 @@
     --card-bg: rgba(255,255,255,0.12);
 }
 
-/* ========== CUSTOM CURSOR ANIMATION ========== */
-body{
-    cursor: none;
-}
-.custom-cursor{
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--aqua);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 9999;
-    transition: all 0.1s ease;
-    box-shadow: 0 0 20px var(--aqua), inset 0 0 10px var(--aqua);
-    animation: pulse-cursor 2s infinite;
-}
-.custom-cursor-dot{
-    position: fixed;
-    width: 8px;
-    height: 8px;
-    background: var(--neon-pink);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 10000;
-    transition: all 0.05s ease;
-    box-shadow: 0 0 15px var(--neon-pink);
-}
-.custom-cursor.hover{
-    transform: scale(2);
-    background: rgba(0, 234, 255, 0.1);
-    border-color: var(--neon-pink);
-    box-shadow: 0 0 30px var(--neon-pink), inset 0 0 15px var(--neon-pink);
-}
-@keyframes pulse-cursor{
-    0%, 100%{ opacity: 1; }
-    50%{ opacity: 0.6; }
-}
-
 /* Page background */
 body{
     margin:0;
@@ -63,7 +25,6 @@ body{
     color:#fff;
     overflow-y: hidden;
     overflow-x: hidden;
-    cursor: none;
 }
 
 /* ========== ENTRANCE ANIMATIONS ========== */
@@ -118,30 +79,32 @@ body{
 .register-wrapper{
     position:relative;
     z-index:50;
-    width:min(90vw,900px);
-    max-width:1100px;
-    margin:3vh;
+    width:min(85vw, 750px);
+    max-width:850px;
+    margin:2vh auto;
     display:flex;
-    gap:2rem;
+    gap:1.5rem;
     align-items:stretch;
+    transform: scale(0.9);
 }
 
 /* Left: branding panel */
 .brand-panel{
-    flex: 0 0 min(40%, 420px);
-    min-width:260px;
+    flex: 0 0 min(36%, 320px);
+    min-width:220px;
     background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
-    border-radius: 50px;
-    padding: clamp(1.6rem, 3vh, 2.4rem);
+    border-radius: 40px;
+    padding: clamp(1.2rem, 2.5vh, 1.8rem);
     display:flex;
     flex-direction:column;
     justify-content:center;
-    align-items:flex-start;
+    align-items:center;
     box-shadow: 0 18px 40px rgba(0,0,0,0.35);
     border:1px solid rgba(255,255,255,0.06);
     backdrop-filter: blur(8px);
     animation: fadeInLeft 0.8s ease-out;
     transition: all 0.3s ease;
+    text-align: center;
 }
 .brand-panel:hover{
     transform: translateY(-5px);
@@ -151,55 +114,69 @@ body{
 /* EduHelm emblem */
 .brand-badge{
     display:flex;
+    flex-direction:column;
     align-items:center;
-    gap:0.2rem;
-    margin-bottom:1rem;
+    gap:0.5rem;
+    margin-bottom:0.6rem;
     user-select:none;
+    width: 100%;
 }
 
 /* logo image */
 .brand-icon{
-    width: 150px !important;
-    height: 150px !important;
+    width: 130px !important;
+    height: 130px !important;
     border-radius: 0 !important;
     background: none !important;
     box-shadow: none !important;
-    transform: none !important;
     object-fit: contain;
     transition: all 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    filter: drop-shadow(0 0 20px rgba(0, 234, 255, 0.5));
+    filter: drop-shadow(0 0 25px rgba(0, 234, 255, 0.6));
+    margin-bottom: 0;
 }
 .brand-icon:hover{
-    transform: rotate(360deg) scale(1.1) !important;
-    filter: drop-shadow(0 0 30px rgba(255, 96, 192, 0.8));
+    transform: rotate(360deg) scale(1.15) !important;
+    filter: drop-shadow(0 0 35px rgba(255, 96, 192, 0.9));
 }
 
 /* big stylized text */
 .brand-title{
     font-weight:900;
-    font-size: clamp(1.9rem, 4.4vw, 3.2rem);
-    line-height:1;
+    font-size: clamp(1.8rem, 4.2vw, 2.8rem);
+    line-height:1.1;
     color: white;
-    letter-spacing: -0.02em;
-    text-shadow: 0 0 0.7rem rgba(255,96,192,0.25);
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 20px rgba(0, 234, 255, 0.6), 0 0 40px rgba(255, 96, 192, 0.4);
     margin:0;
+    background: linear-gradient(135deg, #ffffff, #00eaff, #ff60c0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: textShine 3s ease-in-out infinite;
+}
+
+@keyframes textShine {
+    0%, 100% { filter: brightness(1) drop-shadow(0 0 15px rgba(0, 234, 255, 0.5)); }
+    50% { filter: brightness(1.3) drop-shadow(0 0 25px rgba(255, 96, 192, 0.7)); }
 }
 
 /* tagline */
 .brand-tag{
-    margin-top:0.6rem;
-    color: rgba(255,255,255,0.85);
+    margin-top:0.3rem;
+    color: rgba(255,255,255,0.95);
     font-weight:600;
-    font-size: clamp(0.85rem, 1.6vw, 1.05rem);
+    font-size: clamp(0.85rem, 1.5vw, 1rem);
     opacity:0.95;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: 0.5px;
 }
 
 /* Right: form panel */
 .form-panel{
-    flex:1 1 520px;
+    flex:1 1 420px;
     background: var(--card-bg);
-    border-radius: 50px;
-    padding: clamp(1.4rem, 3.2vh, 3rem);
+    border-radius: 40px;
+    padding: clamp(1.2rem, 2.8vh, 2.2rem);
     box-shadow: 0 18px 40px rgba(0,0,0,0.45);
     border: 1px solid rgba(255,255,255,0.06);
     backdrop-filter: blur(8px);
@@ -217,13 +194,15 @@ body{
 /* Form top heading inside form panel */
 .form-panel .heading{
     text-align:center;
-    margin-bottom:1rem;
+    margin-bottom:1.5rem;
 }
 .form-panel h2{
-    font-size: clamp(1.25rem, 2.6vw, 1.75rem);
+    font-size: clamp(1.4rem, 2.6vw, 1.9rem);
     margin:0 0 0.6rem 0;
     color:#fff;
-    font-weight:700;
+    font-weight:800;
+    text-shadow: 0 2px 15px rgba(0, 234, 255, 0.4);
+    letter-spacing: 0.5px;
 }
 
 /* form body */
@@ -353,13 +332,13 @@ body{
     <aside class="brand-panel" aria-hidden="false">
         <div class="brand-badge">
             <img src="{% static 'users/logo.svg' %}" alt="EduHelm Logo" class="brand-icon">
-            <div>
+            <div style="width: 100%;">
                 <h1 class="brand-title">EduHelm</h1>
                 <div class="brand-tag">Navigate learning. Master skills.</div>
             </div>
         </div>
 
-        <p style="margin-top:1rem; color:rgba(255,255,255,0.9); font-weight:600;">
+        <p style="margin-top:0; color:rgba(255,255,255,0.9); font-weight:500; font-size:0.9rem; line-height:1.4; text-align:center; padding:0;">
             Join EduHelm to access curated courses, practice problems, and community feedback.
         </p>
     </aside>
@@ -420,44 +399,7 @@ body{
     </section>
 </div>
 
-<!-- Custom Cursor Elements -->
-<div class="custom-cursor"></div>
-<div class="custom-cursor-dot"></div>
-
 <script>
-// ========== CUSTOM CURSOR ANIMATION ==========
-const cursor = document.querySelector('.custom-cursor');
-const cursorDot = document.querySelector('.custom-cursor-dot');
-
-document.addEventListener('mousemove', (e) => {
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-    
-    cursorDot.style.left = e.clientX + 'px';
-    cursorDot.style.top = e.clientY + 'px';
-});
-
-// Add hover effect on interactive elements
-const interactiveElements = document.querySelectorAll('a, button, input, .brand-icon');
-interactiveElements.forEach(el => {
-    el.addEventListener('mouseenter', () => {
-        cursor.classList.add('hover');
-    });
-    el.addEventListener('mouseleave', () => {
-        cursor.classList.remove('hover');
-    });
-});
-
-// Hide cursor when leaving window
-document.addEventListener('mouseleave', () => {
-    cursor.style.opacity = '0';
-    cursorDot.style.opacity = '0';
-});
-document.addEventListener('mouseenter', () => {
-    cursor.style.opacity = '1';
-    cursorDot.style.opacity = '1';
-});
-
 // ========== PARTICLE TRAIL EFFECT ==========
 let particles = [];
 const particleCount = 20;
