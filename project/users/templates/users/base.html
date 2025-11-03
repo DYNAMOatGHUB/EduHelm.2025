@@ -4,11 +4,488 @@
     <meta charset="UTF-8">
     <title>{% block title %}EduHelm{% endblock %}</title>
     {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ========== THEME VARIABLES ========== */
+        :root {
+            --transition-speed: 0.3s;
+        }
+        
+        /* Light Theme */
+        [data-theme="light"] {
+            --bg-gradient-1: #f0f4ff;
+            --bg-gradient-2: #e0e7ff;
+            --bg-gradient-3: #fce7f3;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --sidebar-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #1a202c;
+            --text-secondary: #4a5568;
+            --border-color: rgba(0, 0, 0, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --primary-color: #3b82f6;
+            --accent-color: #ec4899;
+            --hover-bg: rgba(59, 130, 246, 0.1);
+        }
+        
+        /* Dark Theme */
+        [data-theme="dark"] {
+            --bg-gradient-1: #0a0e27;
+            --bg-gradient-2: #1a1f3a;
+            --bg-gradient-3: #2a1a3f;
+            --card-bg: rgba(255, 255, 255, 0.08);
+            --sidebar-bg: rgba(20, 25, 45, 0.95);
+            --text-color: #ffffff;
+            --text-secondary: #b8bfd8;
+            --border-color: rgba(0, 234, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --primary-color: #00eaff;
+            --accent-color: #ff60c0;
+            --hover-bg: rgba(0, 234, 255, 0.1);
+        }
+        
+        /* ========== GLOBAL ANIMATIONS & CURSOR ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed) ease, 
+                        color var(--transition-speed) ease,
+                        border-color var(--transition-speed) ease;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            cursor: none;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+        
+        /* Custom Cursor */
+        .custom-cursor {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 99999;
+            transition: all 0.1s ease;
+            box-shadow: 0 0 20px var(--primary-color), inset 0 0 10px var(--primary-color);
+            animation: pulse-cursor 2s infinite;
+        }
+        
+        .custom-cursor-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100000;
+            transition: all 0.05s ease;
+            box-shadow: 0 0 15px var(--accent-color);
+        }
+        
+        .custom-cursor.hover {
+            transform: scale(2);
+            background: var(--hover-bg);
+            border-color: var(--accent-color);
+            box-shadow: 0 0 30px var(--accent-color), inset 0 0 15px var(--accent-color);
+        }
+        
+        @keyframes pulse-cursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        
+        /* Global Entrance Animations */
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Smooth Page Transitions */
+        .page-transition {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        /* Hover Effects for Interactive Elements */
+        a, button, input[type="submit"], .clickable {
+            transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        /* Glow on Hover */
+        .glow-on-hover:hover {
+            filter: drop-shadow(0 0 15px rgba(0, 234, 255, 0.6));
+            transform: translateY(-3px);
+        }
+        
+        /* Ripple Effect */
+        @keyframes ripple {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* ========== THEME TOGGLE BUTTON ========== */
+        .theme-toggle-wrapper {
+            padding: 15px 0;
+            border-top: 1px solid var(--border-color);
+            margin-top: 15px;
+        }
+        
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            color: #ffffff;
+            font-weight: 700;
+            font-size: 1.05em;
+            box-shadow: 0 5px 20px var(--shadow-color), 0 0 20px rgba(var(--primary-color), 0.3);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .theme-toggle::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .theme-toggle:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .theme-toggle:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 30px var(--shadow-color), 0 0 40px var(--primary-color);
+        }
+        
+        .theme-toggle:active {
+            transform: translateY(-1px) scale(0.98);
+            animation: themeSwitch 0.6s ease-out;
+        }
+        
+        @keyframes themeSwitch {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(0.95) rotate(-5deg); }
+            50% { transform: scale(1.05) rotate(5deg); }
+            75% { transform: scale(0.98) rotate(-2deg); }
+        }
+        
+        .theme-toggle-icon {
+            font-size: 1.4em;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .theme-toggle:hover .theme-toggle-icon {
+            transform: rotate(180deg) scale(1.2);
+        }
+        
+        .theme-toggle-text {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Theme switch animation particles */
+        @keyframes particleExplosion {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0);
+            }
+        }
+    </style>
+    
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     {% endblock %}
 </head>
-<body class="{% block body_class %}{% endblock %}">
+<body data-theme="dark" class="{% block body_class %}{% endblock %}">
+    <!-- Custom Cursor Elements -->
+    <div class="custom-cursor"></div>
+    <div class="custom-cursor-dot"></div>
+    
     {% block content %}{% endblock %}
+    
+    <!-- Global JavaScript for Animations -->
+    <script>
+        // ========== THEME TOGGLE ==========
+        const themeToggle = document.getElementById('theme-toggle');
+        const html = document.documentElement;
+        const body = document.body;
+        
+        // Load saved theme or default to dark
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        body.setAttribute('data-theme', savedTheme);
+        updateThemeButton(savedTheme);
+        
+        function updateThemeButton(theme) {
+            const icon = document.querySelector('.theme-toggle-icon');
+            const text = document.querySelector('.theme-toggle-text');
+            
+            if (theme === 'dark') {
+                if (icon) icon.textContent = '🌙';
+                if (text) text.textContent = 'Dark Mode';
+            } else {
+                if (icon) icon.textContent = '☀️';
+                if (text) text.textContent = 'Light Mode';
+            }
+        }
+        
+        function createParticles(x, y) {
+            const colors = ['#00eaff', '#ff60c0', '#ffffff', '#fbbf24'];
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                const angle = (Math.PI * 2 * i) / particleCount;
+                const velocity = 100 + Math.random() * 100;
+                const tx = Math.cos(angle) * velocity;
+                const ty = Math.sin(angle) * velocity;
+                
+                particle.style.position = 'fixed';
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.width = (Math.random() * 8 + 4) + 'px';
+                particle.style.height = particle.style.width;
+                particle.style.borderRadius = '50%';
+                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.pointerEvents = 'none';
+                particle.style.zIndex = '99999';
+                particle.style.boxShadow = `0 0 10px ${particle.style.background}`;
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+                particle.style.animation = 'particleExplosion 0.8s ease-out forwards';
+                
+                document.body.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 800);
+            }
+        }
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = rect.left + rect.width / 2;
+                const y = rect.top + rect.height / 2;
+                
+                // Create particle explosion
+                createParticles(x, y);
+                
+                // Toggle theme
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                updateThemeButton(newTheme);
+                
+                // Add click ripple
+                const ripple = document.createElement('span');
+                ripple.style.position = 'absolute';
+                ripple.style.left = (e.clientX - rect.left) + 'px';
+                ripple.style.top = (e.clientY - rect.top) + 'px';
+                ripple.style.width = '10px';
+                ripple.style.height = '10px';
+                ripple.style.borderRadius = '50%';
+                ripple.style.background = 'rgba(255,255,255,0.8)';
+                ripple.style.transform = 'scale(0)';
+                ripple.style.animation = 'ripple 0.6s ease-out';
+                ripple.style.pointerEvents = 'none';
+                
+                this.appendChild(ripple);
+                setTimeout(() => ripple.remove(), 600);
+            });
+        }
+        
+        // ========== CUSTOM CURSOR ==========
+        const cursor = document.querySelector('.custom-cursor');
+        const cursorDot = document.querySelector('.custom-cursor-dot');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+            cursorDot.style.left = e.clientX + 'px';
+            cursorDot.style.top = e.clientY + 'px';
+        });
+        
+        // Hover effect on interactive elements
+        const interactiveElements = document.querySelectorAll('a, button, input, select, textarea, .clickable');
+        interactiveElements.forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+        });
+        
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity = '0';
+            cursorDot.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity = '1';
+            cursorDot.style.opacity = '1';
+        });
+        
+        // ========== PARTICLE TRAIL ==========
+        let particles = [];
+        const particleCount = 20;
+        
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.size = Math.random() * 5 + 2;
+                this.speedX = Math.random() * 3 - 1.5;
+                this.speedY = Math.random() * 3 - 1.5;
+                this.opacity = 1;
+                this.color = Math.random() > 0.5 ? '#ff60c0' : '#00eaff';
+                
+                this.element = document.createElement('div');
+                this.element.style.position = 'fixed';
+                this.element.style.width = this.size + 'px';
+                this.element.style.height = this.size + 'px';
+                this.element.style.borderRadius = '50%';
+                this.element.style.background = this.color;
+                this.element.style.pointerEvents = 'none';
+                this.element.style.zIndex = '9998';
+                this.element.style.boxShadow = `0 0 10px ${this.color}`;
+                document.body.appendChild(this.element);
+            }
+            
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                this.opacity -= 0.02;
+                
+                this.element.style.left = this.x + 'px';
+                this.element.style.top = this.y + 'px';
+                this.element.style.opacity = this.opacity;
+                
+                if (this.opacity <= 0) {
+                    this.element.remove();
+                    return false;
+                }
+                return true;
+            }
+        }
+        
+        document.addEventListener('mousemove', (e) => {
+            if (Math.random() > 0.8) {
+                particles.push(new Particle(e.clientX, e.clientY));
+            }
+            
+            particles = particles.filter(particle => particle.update());
+            
+            if (particles.length > particleCount) {
+                const removed = particles.shift();
+                removed.element.remove();
+            }
+        });
+        
+        // ========== RIPPLE EFFECT ON CLICKS ==========
+        document.addEventListener('click', function(e) {
+            const ripple = document.createElement('div');
+            ripple.style.position = 'fixed';
+            ripple.style.left = e.clientX + 'px';
+            ripple.style.top = e.clientY + 'px';
+            ripple.style.width = '10px';
+            ripple.style.height = '10px';
+            ripple.style.borderRadius = '50%';
+            ripple.style.border = '2px solid #00eaff';
+            ripple.style.pointerEvents = 'none';
+            ripple.style.zIndex = '9999';
+            ripple.style.animation = 'ripple 0.6s ease-out';
+            
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+        
+        // ========== SMOOTH SCROLL ==========
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // ========== INTERSECTION OBSERVER FOR SCROLL ANIMATIONS ==========
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // Observe elements with .animate-on-scroll class
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.animate-on-scroll').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+    
+    {% block extra_js %}{% endblock %}
 </body>
 </html>
