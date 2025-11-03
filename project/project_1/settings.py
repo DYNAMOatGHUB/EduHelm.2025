@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from decouple import config, Csv
+import certifi
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -92,6 +93,7 @@ WSGI_APPLICATION = 'project_1.wsgi.application'
 MONGODB_URI = config('MONGODB_URI', default='mongodb://localhost:27017/')
 MONGODB_NAME = config('MONGODB_NAME', default='eduhelm_db')
 
+# Configure SSL/TLS settings for MongoDB Atlas
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
@@ -99,6 +101,9 @@ DATABASES = {
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
             'host': MONGODB_URI,
+            'tlsCAFile': certifi.where(),  # Use certifi's SSL certificate bundle
+            'retryWrites': True,
+            'w': 'majority',
         }
     }
 }
