@@ -34,6 +34,8 @@ urlpatterns = [
     path('profile/',user_views.profile,name='profile'),
     path('logout/confirm',user_views.logout_confirm,name='logout_confirm'),
 ]
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)                                       #this tells the django that we are on the development server and allow us to use sent and receive .Normally we ccant do that cause django isnt meant for media purpose .so it normally blocks request that comes with /media/
+
+# Serve media files in both development and production
+# In production, this is fine for small apps on Render
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
