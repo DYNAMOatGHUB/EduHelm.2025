@@ -92,8 +92,16 @@ WSGI_APPLICATION = 'project_1.wsgi.application'
 MONGODB_URI = config('MONGODB_URI', default='mongodb://localhost:27017/')
 MONGODB_NAME = config('MONGODB_NAME', default='eduhelm_db')
 
-# Configure MongoDB connection
-# For MongoDB Atlas, the URI already includes SSL/TLS settings
+# Parse URI to add SSL parameters if needed
+# For local development, use mongodb://localhost:27017/
+# For MongoDB Atlas, ensure URI includes: ?ssl=true&ssl_cert_reqs=CERT_NONE
+if 'mongodb+srv://' in MONGODB_URI or 'ssl=true' in MONGODB_URI:
+    # MongoDB Atlas or SSL connection
+    if '?' not in MONGODB_URI:
+        MONGODB_URI += '?ssl=true&ssl_cert_reqs=CERT_NONE'
+    elif 'ssl=' not in MONGODB_URI:
+        MONGODB_URI += '&ssl=true&ssl_cert_reqs=CERT_NONE'
+
 DATABASES = {
     'default': {
         'ENGINE': 'djongo',
@@ -101,9 +109,6 @@ DATABASES = {
         'ENFORCE_SCHEMA': False,
         'CLIENT': {
             'host': MONGODB_URI,
-            'ssl': True,  # Enable SSL
-            'ssl_cert_reqs': 0,  # Don't verify SSL certificates (compatible with older pymongo)
-            'retryWrites': False,  # Disable retryWrites for compatibility
         }
     }
 }
