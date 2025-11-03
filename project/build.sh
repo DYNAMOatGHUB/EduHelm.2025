@@ -13,7 +13,8 @@ python manage.py collectstatic --no-input
 # python manage.py migrate
 
 # Create admin user if it doesn't exist
-echo "Creating admin user..."
-python manage.py createadmin
+# Skip this during build - MongoDB connection may not be ready
+# Admin will be created on first successful request instead
+echo "Skipping admin creation during build - will be created on first run"
 
 echo "Build completed successfully!"
