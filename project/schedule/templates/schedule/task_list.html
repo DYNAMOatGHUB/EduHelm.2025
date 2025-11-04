@@ -256,44 +256,85 @@
 
     .task-actions {
         display: flex;
-        gap: 10px;
+        gap: 12px;
         flex-shrink: 0;
     }
 
     .action-btn {
-        width: 40px;
-        height: 40px;
+        padding: 12px 20px;
         border-radius: 12px;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
+        gap: 8px;
         text-decoration: none;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        border: 2px solid transparent;
+        white-space: nowrap;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .action-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .action-btn:hover::before {
+        width: 200px;
+        height: 200px;
+    }
+
+    .action-btn i {
         font-size: 1.1rem;
+        transition: transform 0.3s ease;
+    }
+
+    .action-btn:hover i {
+        transform: scale(1.2);
     }
 
     .action-btn.edit {
-        background: rgba(59, 130, 246, 0.1);
-        color: #3b82f6;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%);
+        color: #2563eb;
+        border-color: rgba(59, 130, 246, 0.3);
     }
 
     .action-btn.edit:hover {
-        background: #3b82f6;
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
         color: white;
-        transform: translateY(-3px) rotate(10deg);
-        box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        border-color: #3b82f6;
     }
 
     .action-btn.delete {
-        background: rgba(239, 68, 68, 0.1);
-        color: #ef4444;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.15) 0%, rgba(220, 38, 38, 0.15) 100%);
+        color: #dc2626;
+        border-color: rgba(239, 68, 68, 0.3);
     }
 
     .action-btn.delete:hover {
-        background: #ef4444;
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
         color: white;
-        transform: translateY(-3px) rotate(-10deg);
-        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+        border-color: #ef4444;
+    }
+
+    .action-btn:active {
+        transform: translateY(-1px);
     }
 
     .empty-state {
@@ -347,6 +388,28 @@
         color: #9ca3af;
     }
 
+    [data-theme="dark"] .action-btn.edit {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.2) 0%, rgba(37, 99, 235, 0.2) 100%);
+        color: #60a5fa;
+        border-color: rgba(59, 130, 246, 0.4);
+    }
+
+    [data-theme="dark"] .action-btn.edit:hover {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+
+    [data-theme="dark"] .action-btn.delete {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+        color: #f87171;
+        border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    [data-theme="dark"] .action-btn.delete:hover {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+    }
+
     @media (max-width: 768px) {
         .tasks-header h1 {
             font-size: 2rem;
@@ -355,11 +418,41 @@
         .task-card {
             flex-direction: column;
             align-items: flex-start;
+            gap: 15px;
         }
 
         .task-actions {
             width: 100%;
             justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 14px 16px;
+            font-size: 0.9rem;
+            justify-content: center;
+        }
+
+        .action-btn span {
+            display: inline;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .action-btn span {
+            display: none;
+        }
+
+        .action-btn {
+            width: 48px;
+            height: 48px;
+            padding: 0;
+            flex: none;
+        }
+
+        .action-btn i {
+            font-size: 1.2rem;
         }
     }
 </style>
@@ -414,11 +507,13 @@
                     </div>
 
                     <div class="task-actions">
-                        <a href="{% url 'schedule:task_update' task.pk %}" class="action-btn edit" title="Edit Task">
+                        <a href="{% url 'schedule:task_update' task.pk %}" class="action-btn edit">
                             <i class="fas fa-edit"></i>
+                            <span>Edit</span>
                         </a>
-                        <a href="{% url 'schedule:task_delete' task.pk %}" class="action-btn delete" title="Delete Task">
-                            <i class="fas fa-trash"></i>
+                        <a href="{% url 'schedule:task_delete' task.pk %}" class="action-btn delete">
+                            <i class="fas fa-trash-alt"></i>
+                            <span>Delete</span>
                         </a>
                     </div>
                 </div>

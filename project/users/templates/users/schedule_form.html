@@ -1,8 +1,8 @@
 {% extends 'users/base.html' %}
 
 {% block extra_css %}
-<!-- Flatpickr CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<!-- Font Awesome for Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
     .schedule-form-container {
         max-width: 800px;
@@ -257,18 +257,6 @@
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     }
 
-    /* Flatpickr custom styling */
-    .flatpickr-calendar {
-        border-radius: 16px !important;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
-        border: none !important;
-    }
-
-    .flatpickr-day.selected {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-        border: none !important;
-    }
-
     /* Dark mode support */
     [data-theme="dark"] .form-card {
         background: rgba(31, 41, 55, 0.95);
@@ -361,8 +349,7 @@
                     <i class="fas fa-clock"></i>
                     Start
                 </label>
-                <input class="form-control" id="scheduled_start" name="scheduled_start" 
-                       placeholder="YYYY-MM-DDTHH:MM" required 
+                <input class="form-control" type="datetime-local" id="scheduled_start" name="scheduled_start" required 
                        value="{% if schedule %}{{ schedule.scheduled_start|date:'Y-m-d\TH:i' }}{% endif %}" />
             </div>
 
@@ -371,8 +358,7 @@
                     <i class="fas fa-clock"></i>
                     End (optional)
                 </label>
-                <input class="form-control" id="scheduled_end" name="scheduled_end" 
-                       placeholder="YYYY-MM-DDTHH:MM" 
+                <input class="form-control" type="datetime-local" id="scheduled_end" name="scheduled_end" 
                        value="{% if schedule and schedule.scheduled_end %}{{ schedule.scheduled_end|date:'Y-m-d\TH:i' }}{% endif %}" />
             </div>
 
@@ -427,29 +413,5 @@
 {% endblock %}
 
 {% block scripts %}
-<!-- Flatpickr JS for beautiful date/time picker -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Initialize flatpickr for start date/time
-        flatpickr("#scheduled_start", {
-            enableTime: true,
-            dateFormat: "Y-m-d\\TH:i",
-            time_24hr: true,
-            minuteIncrement: 15,
-            defaultHour: 9,
-            defaultMinute: 0
-        });
-
-        // Initialize flatpickr for end date/time
-        flatpickr("#scheduled_end", {
-            enableTime: true,
-            dateFormat: "Y-m-d\\TH:i",
-            time_24hr: true,
-            minuteIncrement: 15,
-            defaultHour: 10,
-            defaultMinute: 0
-        });
-    });
-</script>
+<!-- No additional scripts needed - using native browser datetime picker -->
 {% endblock %}

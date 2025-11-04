@@ -364,12 +364,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Load badges
     function loadBadges() {
-        fetch('/users/api/badges/', {
+        fetch('{% url 'get_user_badges' %}', {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+            return response.json();
+        })
         .then(data => {
             renderBadges(data.badges);
             badgeCount.textContent = data.total_earned;
@@ -448,13 +451,16 @@ document.addEventListener('DOMContentLoaded', function() {
         icon.classList.add('fa-spin');
         this.disabled = true;
         
-        fetch('/users/api/badges/check/', {
+        fetch('{% url 'check_badge_eligibility' %}', {
             headers: {
                 'X-Requested-With': 'XMLHttpRequest',
                 'X-CSRFToken': getCookie('csrftoken')
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok: ' + response.status);
+            return response.json();
+        })
         .then(data => {
             icon.classList.remove('fa-spin');
             this.disabled = false;
