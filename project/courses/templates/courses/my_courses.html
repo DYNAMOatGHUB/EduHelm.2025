@@ -366,9 +366,22 @@
                 margin: 0 auto;
             }
         }
+        
+        @keyframes particleExplosion {
+            0% {
+                opacity: 1;
+                transform: translate(0, 0) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(var(--tx), var(--ty)) scale(0);
+            }
+        }
     </style>
 </head>
 <body data-theme="dark">
+    {% include 'users/partials/sidebar.html' %}
+    
     <div class="container">
         <a href="{% url 'sample_home' %}" class="back-btn">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -546,6 +559,60 @@
         // Theme Toggle Support
         const savedTheme = localStorage.getItem('theme') || 'dark';
         document.body.setAttribute('data-theme', savedTheme);
+        document.documentElement.setAttribute('data-theme', savedTheme);
+        
+        // Add theme toggle functionality for sidebar button
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            if (themeToggle) {
+                function updateThemeButton(theme) {
+                    const icon = document.querySelector('.theme-toggle-icon');
+                    const text = document.querySelector('.theme-toggle-text');
+                    if (icon && text) {
+                        if (theme === 'dark') {
+                            icon.textContent = '🌙';
+                            text.textContent = 'Dark Mode';
+                        } else {
+                            icon.textContent = '☀️';
+                            text.textContent = 'Light Mode';
+                        }
+                    }
+                }
+                
+                function createParticles(x, y) {
+                    const colors = ['#00eaff', '#ff60c0', '#ffffff', '#fbbf24'];
+                    const particleCount = 20;
+                    for (let i = 0; i < particleCount; i++) {
+                        const particle = document.createElement('div');
+                        const angle = (Math.PI * 2 * i) / particleCount;
+                        const velocity = 50 + Math.random() * 50;
+                        const tx = Math.cos(angle) * velocity;
+                        const ty = Math.sin(angle) * velocity;
+                        particle.style.cssText = `position:fixed;left:${x}px;top:${y}px;width:${4+Math.random()*4}px;height:${4+Math.random()*4}px;background:${colors[Math.floor(Math.random()*colors.length)]};border-radius:50%;pointer-events:none;z-index:9999;--tx:${tx}px;--ty:${ty}px;animation:particleExplosion 0.8s ease-out forwards`;
+                        document.body.appendChild(particle);
+                        setTimeout(() => particle.remove(), 800);
+                    }
+                }
+                
+                updateThemeButton(savedTheme);
+                
+                themeToggle.addEventListener('click', function(e) {
+                    const rect = this.getBoundingClientRect();
+                    const x = rect.left + rect.width / 2;
+                    const y = rect.top + rect.height / 2;
+                    createParticles(x, y);
+                    
+                    const currentTheme = document.body.getAttribute('data-theme');
+                    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                    
+                    document.body.setAttribute('data-theme', newTheme);
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    
+                    updateThemeButton(newTheme);
+                });
+            }
+        });
     </script>
 </body>
 </html>

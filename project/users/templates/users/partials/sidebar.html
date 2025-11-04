@@ -1,0 +1,240 @@
+<style>
+.sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    background: var(--sidebar-bg);
+    backdrop-filter: blur(20px);
+    border-right: 1px solid var(--border-color);
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    box-shadow: 4px 0 20px var(--shadow-color);
+    overflow-y: auto;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 40px;
+    text-align: center;
+    letter-spacing: 1px;
+}
+
+.primary-nav {
+    flex: 1;
+}
+
+.primary-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.primary-nav a::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary-color);
+    transform: scaleY(0);
+    transition: transform 0.3s ease;
+}
+
+.primary-nav a:hover::before,
+.primary-nav a.active::before {
+    transform: scaleY(1);
+}
+
+.primary-nav a:hover,
+.primary-nav a.active {
+    background: var(--hover-bg);
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
+.primary-nav a i {
+    font-size: 1.2rem;
+    width: 24px;
+    text-align: center;
+}
+
+.theme-toggle-wrapper {
+    padding: 15px 0;
+    border-top: 1px solid var(--border-color);
+    margin-top: 20px;
+}
+
+.theme-toggle {
+    width: 100%;
+    padding: 12px 18px;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.theme-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.theme-toggle-icon {
+    font-size: 1.3rem;
+}
+
+.auth-links {
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.auth-links a,
+.auth-links button {
+    width: 100%;
+    padding: 12px 18px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 2px solid rgba(239, 68, 68, 0.3);
+    border-radius: 12px;
+    color: #ef4444;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.auth-links a:hover,
+.auth-links button:hover {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border-color: #ef4444;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-form button {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* Adjust main content when sidebar is present */
+body.has-sidebar {
+    padding-left: 240px;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+
+    .sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    body.has-sidebar {
+        padding-left: 0;
+    }
+}
+</style>
+
+<div class="sidebar">
+    <div class="logo">EduHelm.</div>
+    <nav class="primary-nav">
+        <a href="{% url 'sample_home' %}" {% if request.resolver_match.url_name == 'sample_home' %}class="active"{% endif %}>
+            <i class="fas fa-home"></i> Dashboard
+        </a>
+        <a href="{% url 'course_list' %}" {% if request.resolver_match.url_name == 'course_list' %}class="active"{% endif %}>
+            <i class="fas fa-book"></i> Courses
+        </a>
+        <a href="{% url 'my_courses' %}" {% if request.resolver_match.url_name == 'my_courses' %}class="active"{% endif %}>
+            <i class="fas fa-graduation-cap"></i> My Courses
+        </a>
+        <a href="{% url 'schedule:task_list' %}" {% if request.resolver_match.url_name == 'task_list' %}class="active"{% endif %}>
+            <i class="fas fa-tasks"></i> Tasks
+        </a>
+        <a href="{% url 'study_schedule_calendar' %}" {% if request.resolver_match.url_name == 'study_schedule_calendar' %}class="active"{% endif %}>
+            <i class="fas fa-calendar-alt"></i> Calendar
+        </a>
+        <a href="{% url 'study_dashboard' %}" {% if request.resolver_match.url_name == 'study_dashboard' %}class="active"{% endif %}>
+            <i class="fas fa-clock"></i> Study Tracker
+        </a>
+        <a href="{% url 'study_analytics' %}" {% if request.resolver_match.url_name == 'study_analytics' %}class="active"{% endif %}>
+            <i class="fas fa-chart-line"></i> Analytics
+        </a>
+        <a href="{% url 'notes_list' %}" {% if request.resolver_match.url_name == 'notes_list' %}class="active"{% endif %}>
+            <i class="fas fa-sticky-note"></i> My Notes
+        </a>
+        <a href="{% url 'resources_library' %}" {% if request.resolver_match.url_name == 'resources_library' %}class="active"{% endif %}>
+            <i class="fas fa-folder-open"></i> Resources
+        </a>
+        <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>
+            <i class="fas fa-user-circle"></i> Profile
+        </a>
+    </nav>
+
+    <div style="margin-top:auto;">
+        <!-- Theme Toggle Button -->
+        <div class="theme-toggle-wrapper">
+            <button id="theme-toggle" class="theme-toggle">
+                <span class="theme-toggle-text">Dark Mode</span>
+                <span class="theme-toggle-icon">🌙</span>
+            </button>
+        </div>
+        
+        <div class="auth-links">
+            {% if user.is_authenticated %}
+                <form class="logout-form" method="POST" action="{% url 'logout' %}?next={% url 'logout_confirm' %}">
+                    {% csrf_token %}
+                    <button type="submit"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'register' %}" style="display:block; margin-bottom:10px;">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+                <a href="{% url 'login' %}" style="display:block;">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Add has-sidebar class to body for layout purposes
+document.addEventListener('DOMContentLoaded', function() {
+    document.body.classList.add('has-sidebar');
+});
+</script>

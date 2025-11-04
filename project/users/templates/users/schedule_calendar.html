@@ -8,44 +8,7 @@
 <!-- Font Awesome for Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-  /* ===== FANCY CALENDAR STYLES v2.1 ===== */
-  /* Updated: {{ "now"|date:"Y-m-d H:i:s" }} */
-
-  /* Custom Cursor */
-  body {
-    cursor: none !important;
-  }
-
-  .cursor {
-    width: 20px;
-    height: 20px;
-    border: 2px solid #00eaff;
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 99999;
-    transition: all 0.15s ease;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 20px #00eaff;
-  }
-
-  .cursor-follower {
-    width: 8px;
-    height: 8px;
-    background: #ff60c0;
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 99998;
-    transition: all 0.3s ease;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 0 15px #ff60c0;
-  }
-
-  .cursor.expand {
-    transform: translate(-50%, -50%) scale(2);
-    background: rgba(0, 234, 255, 0.1);
-  }
+  /* ===== FANCY CALENDAR STYLES ===== */
 
   /* Back to Dashboard Button */
   .back-btn {
@@ -679,10 +642,6 @@
 {% endblock %}
 
 {% block content %}
-<!-- Custom Cursor Elements -->
-<div class="cursor"></div>
-<div class="cursor-follower"></div>
-
 <div class="calendar-container">
   <a href="{% url 'sample_home' %}" class="back-btn">
     <i class="fas fa-arrow-left"></i> Back to Dashboard
@@ -912,45 +871,5 @@
     });
 
   });
-
-  // Custom Cursor
-  const cursor = document.querySelector('.cursor');
-  const follower = document.querySelector('.cursor-follower');
-  
-  if (cursor && follower) {
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
-    let followerX = 0, followerY = 0;
-
-    document.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-    });
-
-    function animate() {
-      let dx = mouseX - cursorX;
-      let dy = mouseY - cursorY;
-      cursorX += dx * 0.3;
-      cursorY += dy * 0.3;
-      cursor.style.left = cursorX + 'px';
-      cursor.style.top = cursorY + 'px';
-
-      let fdx = mouseX - followerX;
-      let fdy = mouseY - followerY;
-      followerX += fdx * 0.15;
-      followerY += fdy * 0.15;
-      follower.style.left = followerX + 'px';
-      follower.style.top = followerY + 'px';
-
-      requestAnimationFrame(animate);
-    }
-    animate();
-
-    const hoverElements = document.querySelectorAll('a, button, .fc-event, input, select');
-    hoverElements.forEach(el => {
-      el.addEventListener('mouseenter', () => cursor.classList.add('expand'));
-      el.addEventListener('mouseleave', () => cursor.classList.remove('expand'));
-    });
-  }
 </script>
 {% endblock %}
