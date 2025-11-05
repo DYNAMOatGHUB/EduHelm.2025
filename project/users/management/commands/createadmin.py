@@ -3,7 +3,6 @@ Management command to create admin user if it doesn't exist
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from users.models import Profile
 import os
 
 
@@ -36,14 +35,21 @@ class Command(BaseCommand):
                 password=admin_password
             )
 
-            # Create profile for admin
-            profile, created = Profile.objects.get_or_create(
-                user=admin,
-                defaults={
-                    'bio': 'System Administrator',
-                    'is_mentor': True
-                }
-            )
+            self.stdout.write(self.style.SUCCESS(f'Admin user object created: {admin}'))
+
+            # Try to create profile, but don't fail if it errors
+            try:
+                from users.models import Profile
+                profile, created = Profile.objects.get_or_create(
+                    user=admin,
+                    defaults={
+                        'bio': 'System Administrator',
+                        'is_mentor': True
+                    }
+                )
+                self.stdout.write(self.style.SUCCESS(f'Profile created: {created}'))
+            except Exception as profile_error:
+                self.stdout.write(self.style.WARNING(f'Profile creation skipped: {str(profile_error)}'))
 
             # Always show the password clearly in logs
             password_display = admin_password if not os.environ.get('ADMIN_PASSWORD') else "Set from ADMIN_PASSWORD env var"
