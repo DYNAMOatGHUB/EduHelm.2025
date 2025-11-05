@@ -13,11 +13,19 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
         admin_email = os.environ.get('ADMIN_EMAIL', 'admin@eduhelm.com')
-        admin_password = os.environ.get('ADMIN_PASSWORD', 'Admin@2025')
+        admin_password = os.environ.get('ADMIN_PASSWORD', 'EduHelm@Admin2025')
 
         # Check if admin exists
         if User.objects.filter(username=admin_username).exists():
             self.stdout.write(self.style.WARNING(f'Admin user "{admin_username}" already exists'))
+            # Show password reminder for existing admin
+            if not os.environ.get('ADMIN_PASSWORD'):
+                self.stdout.write(self.style.SUCCESS(
+                    f'📌 Default admin credentials:\n'
+                    f'   Username: {admin_username}\n'
+                    f'   Password: EduHelm@Admin2025\n'
+                    f'   ⚠️  Change this password after first login!'
+                ))
             return
 
         try:
@@ -37,10 +45,19 @@ class Command(BaseCommand):
                 }
             )
 
+            # Always show the password clearly in logs
+            password_display = admin_password if not os.environ.get('ADMIN_PASSWORD') else "Set from ADMIN_PASSWORD env var"
             self.stdout.write(self.style.SUCCESS(
-                f'✅ Admin user "{admin_username}" created successfully!\n'
+                f'\n{"="*60}\n'
+                f'✅ ADMIN USER CREATED SUCCESSFULLY!\n'
+                f'{"="*60}\n'
+                f'📌 Save these credentials:\n'
+                f'   Username: {admin_username}\n'
                 f'   Email: {admin_email}\n'
-                f'   Password: {"Set from ADMIN_PASSWORD env var" if os.environ.get("ADMIN_PASSWORD") else admin_password}'
+                f'   Password: {password_display}\n'
+                f'{"="*60}\n'
+                f'⚠️  IMPORTANT: Change this password after first login!\n'
+                f'{"="*60}\n'
             ))
 
         except Exception as e:
