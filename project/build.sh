@@ -15,4 +15,8 @@ python manage.py collectstatic --no-input
 echo "Creating admin user..."
 python manage.py createadmin
 
+# Reset admin password to ensure it matches the default
+echo "Resetting admin password..."
+python manage.py resetadmin
+
 echo "Build completed successfully!"
