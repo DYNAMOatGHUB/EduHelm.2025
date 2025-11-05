@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from decouple import config, Csv
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -89,18 +90,24 @@ WSGI_APPLICATION = 'project_1.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Use SQLite for Django's built-in tables (User, Session, etc.)
-# This is compatible with all Django features and doesn't require external database
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+# PostgreSQL for production (persistent data), SQLite for local development
+if config('DATABASE_URL', default=None):
+    # Production: Use PostgreSQL from Render
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=config('DATABASE_URL'),
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
-
-# MongoDB Configuration (for future direct pymongo usage if needed)
-# MONGODB_URI = config('MONGODB_URI', default='mongodb://localhost:27017/')
-# MONGODB_NAME = config('MONGODB_NAME', default='eduhelm_db')
+else:
+    # Local Development: Use SQLite
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 
 # Password validation

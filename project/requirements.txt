@@ -11,5 +11,6 @@ whitenoise==6.6.0
 # Environment Variables
 python-decouple==3.8
 
-# Database URL parsing (removed - conflicts with djongo/Django 3.1)
-# dj-database-url is optional and requires Django>=3.2. Removed to keep djongo compatibility.
+# PostgreSQL Database
+psycopg2-binary==2.9.9
+dj-database-url==0.5.0
