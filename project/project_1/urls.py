@@ -22,8 +22,14 @@ from django.urls import path,include
 from django.contrib.auth import views as auth_views
 from users import views as user_views
 from django.conf import settings
+from django.http import JsonResponse
+
+# Health check endpoint for Render
+def health_check(request):
+    return JsonResponse({"status": "healthy", "service": "EduHelm"})
 
 urlpatterns = [
+    path('health/', health_check, name='health_check'),  # Add health check endpoint
     path('admin/', admin.site.urls),
     path('',include('sample.urls')),
     path('register/', user_views.register, name='register'),
