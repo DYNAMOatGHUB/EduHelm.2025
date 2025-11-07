@@ -5,6 +5,10 @@ set -o errexit
 # Install dependencies
 pip install -r requirements.txt
 
+# Handle courses app migration reset (fresh database structure)
+echo "Resetting courses app migrations..."
+python manage.py migrate courses zero --noinput || echo "No previous courses migrations to revert"
+
 # Run database migrations (SQLite)
 python manage.py migrate
 
