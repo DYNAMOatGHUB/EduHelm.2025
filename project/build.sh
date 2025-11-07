@@ -33,8 +33,8 @@ try:
         courses_001_exists = cursor.fetchone()
         
         if users_003_exists and not courses_001_exists:
-            print("Detected migration inconsistency. Fixing by removing users.0003 from history...")
-            # Remove the problematic migration from history
+            print("Detected migration inconsistency. Fixing by removing users.0003+ from history...")
+            # Remove the problematic migration from history (but keep tables intact)
             cursor.execute(
                 "DELETE FROM django_migrations WHERE app='users' AND name='0003_auto_20251031_1412'"
             )
@@ -52,8 +52,9 @@ except Exception as e:
     print(f"Could not check/fix migrations (this is OK if first deployment): {e}")
 END_PYTHON
 
-# Now run migrations normally
-python manage.py migrate
+# Now run migrations with --fake-initial to skip creating existing tables
+# This tells Django to mark migrations as applied if tables already exist
+python manage.py migrate --fake-initial
 
 # Collect static files
 python manage.py collectstatic --no-input
