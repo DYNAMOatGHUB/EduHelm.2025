@@ -4,28 +4,10 @@
 
 {% block content %}
 <style>
-    /* Back to Dashboard Button */
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #667eea;
-        text-decoration: none;
-        margin-bottom: 20px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        filter: drop-shadow(0 0 8px #667eea);
-    }
-
-    .back-btn:hover {
-        gap: 12px;
-        transform: translateX(-5px);
-    }
-
     .tasks-container {
         max-width: 1200px;
-        margin: 40px auto;
-        padding: 0 20px;
+        margin: 0 auto;
+        padding: 20px;
         animation: fadeInUp 0.6s ease-out;
     }
 
@@ -458,10 +440,6 @@
 </style>
 
 <div class="tasks-container">
-    <a href="{% url 'sample_home' %}" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
-    
     <div class="tasks-header">
         <h1><i class="fas fa-tasks"></i> My Tasks</h1>
         <p>Stay organized and track your assignments with ease</p>

@@ -1,0 +1,244 @@
+{% extends "users/base.html" %}
+
+{% block title %}{{ lesson.title }} | EduHelm{% endblock %}
+
+
+{# This highlights the 'Courses' link in the sidebar #}
+{% block courses_active %}active{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="settings-section">
+
+        <h2 class="section-title" style="margin-bottom: 10px;">{{ lesson.title }}</h2>
+        <p class="lesson-breadcrumb">
+            Part of: <a href="{% url 'courses:course_detail' lesson.lesson_course.pk %}">{{ lesson.lesson_course.title }}</a>
+        </p>
+
+        <div class="video-container">
+            {% if lesson.youtube_id %}
+                <iframe
+                    width="100%"
+                    height="100%"
+                    src="https://www.youtube.com/embed/{{ lesson.youtube_id }}?rel=0"  title="YouTube video player"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    referrerpolicy="strict-origin-when-cross-origin"
+                    allowfullscreen>
+                </iframe>
+            {% else %}
+                <div class="no-video-placeholder">
+                    <i class="fas fa-video-slash"></i>
+                    <p>No video has been linked for this lesson.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="lesson-content">
+            <h3 class="lesson-notes-title"><i class="far fa-sticky-note"></i> Lesson Notes</h3>
+            <div class="lesson-notes-box">
+                {% if lesson.content %}
+                    <p>{{ lesson.content|linebreaksbr }}</p>
+                {% else %}
+                    <p><em>No notes provided for this lesson.</em></p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="lesson-complete-section">
+
+            {% if is_complete %}
+                <div class="action-button link-button disabled-button" style="display: inline-block; pointer-events: none;">
+                    <i class="fas fa-check-circle"></i> Lesson Completed!
+                </div>
+
+            {% else %}
+                <form action="{% url 'courses:mark_lesson_complete' lesson.pk %}" method="POST" style="margin: 0; display: inline-block;">
+
+                    {% csrf_token %}
+
+                    <button type="submit" class="action-button link-button complete-button-style">
+                        <i class="far fa-check-square"></i> Mark as Complete
+                    </button>
+                </form>
+
+            {% endif %}
+        </div>
+        <div class="lesson-navigation">
+
+            <a href="{% url 'courses:course_detail' lesson.lesson_course.pk %}" class="action-button link-button nav-back-button">
+                <i class="fas fa-arrow-left"></i> Back to Lesson List
+            </a>
+
+            <div class="lesson-nav-buttons">
+
+                {% if prev_lsn %}
+                    <a href="{% url 'courses:lesson_detail' prev_lsn.pk %}" class="action-button link-button nav-prev-button">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
+                {% else %}
+                    <a href="#" class="action-button link-button disabled-button" aria-disabled="true">
+                        <i class="fas fa-chevron-left"></i> Previous
+                    </a>
+                {% endif %}
+
+                {% if next_lsn %}
+                    <a href="{% url 'courses:lesson_detail' next_lsn.pk %}" class="action-button link-button nav-next-button">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% else %}
+                    <a href="#" class="action-button link-button disabled-button" aria-disabled="true">
+                        Next <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        </div>
+</div>
+{% endblock %}
+
+
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    .lesson-breadcrumb {
+        color: var(--subtle-text); margin-top: -10px; margin-bottom: 25px; font-size: 0.9em;
+    }
+    .lesson-breadcrumb a {
+        color: var(--accent-color); font-weight: 600; text-decoration: none;
+    }
+    .lesson-breadcrumb a:hover { text-decoration: underline; }
+
+    /* === Video Embed Container === */
+    .video-container {
+        position: relative;
+        width: 100%;
+        padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        background-color: #000;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 30px;
+        border: 1px solid var(--sidebar-bg);
+    }
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+    .no-video-placeholder {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--subtle-text);
+        background-color: var(--bg-color);
+    }
+    .no-video-placeholder i { font-size: 3em; margin-bottom: 15px; }
+
+    /* === Lesson Notes === */
+    .lesson-content { margin-top: 20px; padding-top: 20px; border-top: 1px dashed var(--sidebar-bg); }
+    .lesson-notes-title { font-size: 1.3em; font-weight: 600; margin-bottom: 15px; color: var(--text-color); }
+    .lesson-notes-title i { margin-right: 8px; color: var(--primary-color); }
+    .lesson-notes-box {
+        color: var(--text-color); font-size: 1em; line-height: 1.6;
+        background-color: var(--bg-color); padding: 20px 25px;
+        border-radius: 8px; border: 1px solid var(--sidebar-bg); word-wrap: break-word;
+    }
+    .lesson-notes-box p { margin: 0; }
+
+    /* === "Mark as Complete" Section === */
+    .lesson-complete-section {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px dashed var(--sidebar-bg);
+        text-align: right; /* Aligns button to the right */
+    }
+
+    .complete-button-style {
+        background-color: var(--primary-color);
+        color: #FFF;
+        font-family: inherit; /* Makes <button> match <a> tags */
+        font-size: inherit;   /* Makes <button> match <a> tags */
+        border: 1px solid var(--primary-color);
+    }
+    .complete-button-style:hover {
+        opacity: 0.8;
+    }
+
+
+    /* === Lesson Navigation === */
+    .lesson-navigation {
+        margin-top: 30px; padding-top: 20px;
+        border-top: 1px dashed var(--sidebar-bg);
+        /* This is the core layout magic: */
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .lesson-nav-buttons {
+        display: flex;
+        gap: 10px; /* Adds space between Prev/Next buttons */
+    }
+
+    /* Make all nav buttons look consistent */
+    .lesson-navigation .action-button,
+    .lesson-complete-section .action-button {
+        padding: 10px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.2s ease;
+        border: 1px solid transparent; /* Prevents jiggling on hover */
+    }
+
+    /* Style for the "Back" button */
+    .nav-back-button {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        border-color: var(--subtle-text);
+    }
+    .nav-back-button:hover {
+        background-color: var(--sidebar-bg);
+    }
+
+    /* Style for the "Previous" button */
+    .nav-prev-button {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        border-color: var(--subtle-text);
+    }
+    .nav-prev-button:hover {
+         background-color: var(--sidebar-bg);
+    }
+
+    /* Style for the "Next" button */
+    .nav-next-button {
+        background-color: var(--primary-color);
+        color: #FFF; /* Assumes primary color is dark */
+        border-color: var(--primary-color);
+    }
+    .nav-next-button:hover {
+        opacity: 0.8;
+    }
+        
+    /* A shared style for disabled buttons */
+    .disabled-button {
+        background-color: var(--bg-color);
+        color: var(--subtle-text);
+        border-color: var(--sidebar-bg);
+        opacity: 0.6;
+        cursor: not-allowed;
+        pointer-events: none; /* Disables click */
+    }
+    .disabled-button:hover {
+        background-color: var(--bg-color); /* Don't change on hover */
+    }
+</style>
+{% endblock extra_css %}

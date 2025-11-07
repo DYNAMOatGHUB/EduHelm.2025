@@ -91,6 +91,7 @@
         .container { 
             max-width: 1200px; 
             margin: 0 auto;
+            padding: 20px;
             position: relative;
             z-index: 1;
         }
@@ -672,10 +673,6 @@
     {% include 'users/partials/sidebar.html' %}
     
     <div class="container">
-        <a href="{% url 'sample_home' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        
         {% if messages %}
             <div class="messages">
                 {% for message in messages %}

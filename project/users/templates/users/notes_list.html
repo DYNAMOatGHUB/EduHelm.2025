@@ -68,7 +68,8 @@
         
         .container { 
             max-width: 1400px; 
-            margin: 0 auto; 
+            margin: 0 auto;
+            padding: 20px;
             position: relative;
             z-index: 1;
             animation: fadeInUp 0.6s ease-out;
@@ -463,10 +464,6 @@
     {% include 'users/partials/sidebar.html' %}
     
     <div class="container">
-        <a href="{% url 'sample_home' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        
         <div class="header">
             <h1>
                 <i class="fas fa-sticky-note"></i>

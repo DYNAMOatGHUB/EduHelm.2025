@@ -164,8 +164,8 @@ def study_dashboard(request):
     weekly_sessions = [s for s in all_week_sessions if not s.is_active]
     weekly_minutes = sum(session.duration for session in weekly_sessions)
     
-    # Get enrolled courses for dropdown
-    enrolled_courses = Course.objects.filter(enrollment_set__user=request.user)
+    # Get all courses (no enrollment system in simplified version)
+    enrolled_courses = Course.objects.all()
     
     # Ensure profile exists
     from .models import Profile
@@ -273,8 +273,8 @@ def study_history(request):
     
     course_stats = sorted(course_stats_dict.values(), key=lambda x: x['total_time'], reverse=True)
     
-    # Get courses for filter
-    enrolled_courses = Course.objects.filter(enrollment_set__user=request.user)
+    # Get all courses (no enrollment system in simplified version)
+    enrolled_courses = Course.objects.all()
     
     context = {
         'sessions': sessions,
@@ -602,7 +602,7 @@ def notes_list(request):
     
     # Get categories and courses for filters
     categories = NoteCategory.objects.filter(user=request.user)
-    courses = Course.objects.filter(enrollment_set__user=request.user)
+    courses = Course.objects.all()
     
     context = {
         'notes': notes,
@@ -645,7 +645,7 @@ def note_create(request):
         return redirect('note_detail', note_id=note.id)
     
     categories = NoteCategory.objects.filter(user=request.user)
-    courses = Course.objects.filter(enrollment_set__user=request.user)
+    courses = Course.objects.all()
     
     context = {
         'categories': categories,
@@ -689,7 +689,7 @@ def note_edit(request, note_id):
         return redirect('note_detail', note_id=note.id)
     
     categories = NoteCategory.objects.filter(user=request.user)
-    courses = Course.objects.filter(enrollment_set__user=request.user)
+    courses = Course.objects.all()
     
     context = {
         'note': note,
@@ -793,7 +793,7 @@ def resources_library(request):
         public_resources_list = [r for r in public_resources_list 
                                  if search_lower in r.title.lower() or search_lower in (r.description or '').lower()]
     
-    courses = Course.objects.filter(enrollment_set__user=request.user)
+    courses = Course.objects.all()
     
     context = {
         'my_resources': my_resources,
@@ -840,7 +840,7 @@ def resource_upload(request):
         messages.success(request, 'Resource uploaded successfully!')
         return redirect('resources_library')
     
-    courses = Course.objects.filter(enrollment_set__user=request.user)
+    courses = Course.objects.all()
     
     context = {
         'courses': courses,
@@ -1380,9 +1380,13 @@ def check_badge_eligibility(request):
                 if resource_count >= 20:
                     earned = True
             elif 'Course Enthusiast' in badge.name:
-                from courses.models import Enrollment
-                enrollment_count = Enrollment.objects.filter(user=request.user).count()
-                if enrollment_count >= 5:
+                # No enrollment system in simplified version - award based on lesson progress
+                from courses.models import LessonProgress
+                completed_lessons = LessonProgress.objects.filter(
+                    user_link=request.user, 
+                    is_completed=True
+                ).count()
+                if completed_lessons >= 5:
                     earned = True
         
         # Check special badges

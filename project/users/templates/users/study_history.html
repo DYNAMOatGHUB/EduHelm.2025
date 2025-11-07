@@ -20,17 +20,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
         
-        .container { max-width: 1200px; margin: 0 auto; }
-        
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent-color);
-            text-decoration: none;
-            margin-bottom: 20px;
-            font-weight: 500;
-        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
         
         .header {
             text-align: center;
@@ -219,10 +209,6 @@
 </head>
 <body>
     <div class="container">
-        <a href="{% url 'study_dashboard' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        
         <div class="header">
             <h1><i class="fas fa-history"></i> Study History</h1>
             <p style="color: var(--subtle-text);">View and analyze your past study sessions</p>

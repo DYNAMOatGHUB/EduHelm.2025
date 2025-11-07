@@ -2,28 +2,10 @@
 
 {% block extra_css %}
 <style>
-    /* Back to Dashboard Button */
-    .back-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: #667eea;
-        text-decoration: none;
-        margin-bottom: 20px;
-        font-weight: 500;
-        transition: all 0.3s ease;
-        filter: drop-shadow(0 0 8px #667eea);
-    }
-
-    .back-btn:hover {
-        gap: 12px;
-        transform: translateX(-5px);
-    }
-
     .schedule-list-container {
         max-width: 1200px;
-        margin: 50px auto;
-        padding: 0 20px;
+        margin: 0 auto;
+        padding: 20px;
         animation: fadeInUp 0.8s ease-out;
     }
 
@@ -415,10 +397,6 @@
 
 {% block content %}
 <div class="schedule-list-container">
-    <a href="{% url 'sample_home' %}" class="back-btn">
-        <i class="fas fa-arrow-left"></i> Back to Dashboard
-    </a>
-    
     <div class="schedule-header">
         <h2><i class="fas fa-list-alt"></i> Your Schedule</h2>
         <div class="header-actions">

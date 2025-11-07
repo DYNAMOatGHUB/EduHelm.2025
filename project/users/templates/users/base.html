@@ -212,13 +212,22 @@
         .main-content-wrapper {
             margin-left: 240px;
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
             transition: margin-left 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .main-content-wrapper > * {
+            width: 100%;
+            max-width: 1400px;
         }
         
         @media (max-width: 768px) {
             .main-content-wrapper {
                 margin-left: 0;
+                padding: 20px 15px;
             }
         }
     </style>

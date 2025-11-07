@@ -26,17 +26,16 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('',include('sample.urls')),
-    path('courses/', include('courses.urls')),
-    path('schedule/', include('schedule.urls')),  # Task management URLs
-    path('', include('users.urls')),  # Study tracking URLs
     path('register/', user_views.register, name='register'),
     path('logout/',auth_views.LogoutView.as_view(),name='logout'),
     path('login/',auth_views.LoginView.as_view(template_name='users/login.html'),name='login'),
     path('profile/',user_views.profile,name='profile'),
     path('logout/confirm',user_views.logout_confirm,name='logout_confirm'),
+    path('profile_edit/',user_views.profile_edit,name='profile_edit'),
+    path('schedule/',include('schedule.urls')),
+    path('courses/',include('courses.urls')),
+    path('', include('users.urls')),  # Include users URLs for study tracker, notes, resources, etc.
 ]
-
-# Serve media files in both development and production
-# In production, this is fine for small apps on Render
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)                                       #this tells the django that we are on the development server and allow us to use sent and receive .Normally we ccant do that cause django isnt meant for media purpose .so it normally blocks request that comes with /media/
 

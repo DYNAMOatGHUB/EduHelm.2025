@@ -20,7 +20,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-color); min-height: 100vh; padding: 30px; }
         
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
         
         .header {
             display: flex;
@@ -319,10 +319,6 @@
 </head>
 <body>
     <div class="container">
-        <a href="{% url 'sample_home' %}" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-        
         <div class="header">
             <h1>
                 <i class="fas fa-users"></i>

@@ -1,207 +1,81 @@
-from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from django.db.models import Count
-from .models import Course, Enrollment, Lesson, LessonProgress
-import logging
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import Course,Lesson,LessonProgress
+from django.views.generic import ListView,DetailView
+# Create your views here.
 
-logger = logging.getLogger(__name__)
+class CourseListView(LoginRequiredMixin,ListView):
+    model=Course
+    template_name='courses/course_list.html'
+    context_object_name='courses'
 
+class CourseDetailView(LoginRequiredMixin,DetailView):
+    model=Course
+    template_name='courses/course_detail.html'
+    context_object_name='course'
 
-def course_list(request):
-    """Display all published courses"""
-    # Djongo struggles with is_published=True + JOIN, so fetch all and filter in Python
-    try:
-        all_courses = list(Course.objects.select_related('instructor'))
-        courses = [c for c in all_courses if c.is_published]
-    except Exception as exc:
-        logger.error("Failed to load courses: %s", exc)
-        courses = []
-    
-    # Filter by category if provided
-    category = request.GET.get('category')
-    if category:
-        courses = [c for c in courses if c.category == category]
-    
-    # Filter by difficulty
-    difficulty = request.GET.get('difficulty')
-    if difficulty:
-        courses = [c for c in courses if c.difficulty == difficulty]
-    
-    # Search
-    search = request.GET.get('search')
-    if search:
-        courses = [c for c in courses if search.lower() in c.title.lower()]
-    
-    # Sort by created_at descending (newest first)
-    courses.sort(key=lambda c: c.created_at, reverse=True)
-    
-    context = {
-        'courses': courses,
-        'categories': Course.CATEGORY_CHOICES,
-        'difficulties': Course.DIFFICULTY_LEVELS,
-    }
-    return render(request, 'courses/course_list.html', context)
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+
+        user=self.request.user
+        course=self.object                                                                                                                          #gets the DB object of the self which is 'Course'  #contains the title,description,image from the DB
 
 
-def course_detail(request, slug):
-    """Display course details"""
-    # Fetch course - Djongo may struggle with is_published filter
-    try:
-        course = Course.objects.select_related('instructor').get(slug=slug)
-        if not course.is_published:
-            from django.http import Http404
-            raise Http404("Course not found")
-    except Course.DoesNotExist:
-        from django.http import Http404
-        raise Http404("Course not found")
-    
-    # Get published lessons
-    all_lessons = list(course.lessons.all())
-    lessons = [l for l in all_lessons if l.is_published]
-    lessons.sort(key=lambda l: l.order)
-    
-    # Check if user is enrolled
-    is_enrolled = False
-    enrollment = None
-    if request.user.is_authenticated:
-        try:
-            enrollment = Enrollment.objects.get(user=request.user, course=course)
-            is_enrolled = True
-        except Enrollment.DoesNotExist:
-            pass
-    
-    context = {
-        'course': course,
-        'lessons': lessons,
-        'is_enrolled': is_enrolled,
-        'enrollment': enrollment,
-    }
-    return render(request, 'courses/course_detail.html', context)
+        context['lessons'] = course.lesson_set.all().order_by('lesson_order')                                                                        #get all the details specified to that particular course
+                                                                                                                                                     # how the context looks after adding this
+                                                                                                                                                       #{    'course': < Course object: "Django Basics" >,'object': < Courseobject: "Django Basics" >,
+                                                                                               #   This is your new key, added by your custom code:          'lesson': < QuerySet [ <Lesson object: "What are Models?" >,< Lesson object: "What are Views?" > ] >}
+
+                                                                                                                                                                                                                                            # this below line is to get the particular data we needed from the DB .if you again ask we are the current user why again use it .Cause the DB has many users and we are one of it .so the particular user is required to get the persoal data not millions of all users data
+        completed_ids = LessonProgress.objects.filter(user_link=user,lesson_link__lesson_course=course).values_list('lesson_link_id',flat=True)                                                                                      # listen carefully :if you ever get confusion in this line please dont try to learn this from gemni or google(the last time you did this "you Dumdass wasted 6 hours ,So if you felt like want to understand this line 'please consider sucide as a better idea .kindly from your past ass")
+                                                                                                                                                                                                                                            # why did we use 'LessonProgress' cause it allows us to connect to 'User DB(cause we don't want to go and check every user's status,just the current user is enough)'
+                                                                                                                                                                                                                                            # In this part '(user_link=user,lesson_link__lesson_course=course)'  don,t overthink just remember 1. we use the LessonProgress to get access to the user DB to get the current user ,which is "  'user_link=user' (note: left side is the DB field name ,right side is the particular or specific data ,we want to access from the DB field on the left side) : here user_link is the field that allows us to connect to the User DB to get data of the current user .But the user alone is not enough .think like we only reduced from checking status of all the user's to the particular user , but now we still have many courses that we would need to check .So we get the current Course using the 'lesson_link__lesson_course=course'.    'now you will be like  why just directly access the course we are using the Course DB currently .Remember you btch that we are searching in the 'LessonProgress DB' not 'Course DB ' in this current line 'why did you do that cause i need the user btch which i could access only be this DB' .So now we have the current user's particular from 100 of other courses we just have to get all the lessons of that course alone which is done by 'value_list('lesson_link_id',flat=True)gives the PK list of all the lessons'  "
+        context['completed_lesson_ids'] = set(completed_ids)  # Renamed to be clear
 
 
-@login_required
-def enroll_course(request, slug):
-    """Enroll user in a course"""
-    try:
-        course = Course.objects.get(slug=slug)
-        if not course.is_published:
-            messages.error(request, 'This course is not available.')
-            return redirect('course_list')
-    except Course.DoesNotExist:
-        messages.error(request, 'Course not found.')
-        return redirect('course_list')
-    
-    # Check if already enrolled
-    enrollment, created = Enrollment.objects.get_or_create(
-        user=request.user,
-        course=course
-    )
-    
-    if created:
-        messages.success(request, f'Successfully enrolled in {course.title}!')
-    else:
-        messages.info(request, f'You are already enrolled in {course.title}')
-    
-    return redirect('course_detail', slug=course.slug)
+        return context
+
+class LessonDetailView(LoginRequiredMixin,DetailView):
+    model=Lesson
+    template_name='courses/lesson_detail.html'
+    context_object_name='lesson'
+
+    def get_context_data(self,**kwargs):
+        context=super().get_context_data(**kwargs)
+
+        lesson=self.object                                #gets the current lesson and its details
+        course=lesson.lesson_course                       #gets the course that the lesson belongs to
+        current_lesson_order = lesson.lesson_order        #gets the lesson_order of the current lesson (like lesson : 2)
+        user=self.request.user                            #gets the login user
+
+        context['next_lsn']=course.lesson_set.filter(lesson_order__gt=current_lesson_order).order_by('lesson_order').first()
+        context['prev_lsn']=course.lesson_set.filter(lesson_order__lt=current_lesson_order).order_by('-lesson_order').first()
+        context['is_complete']=LessonProgress.objects.filter(user_link=user,lesson_link=lesson).exists()                                    #this line goes to the LessonProgress DBand check if the username and the completed lesson exists
 
 
-@login_required
-def my_courses(request):
-    """Display user's enrolled courses"""
-    # Fetch enrollments without select_related to avoid Djongo issues
-    enrollments = list(Enrollment.objects.filter(user=request.user))
-    
-    # Calculate statistics
-    total_enrollments = len(enrollments)
-    completed_count = len([e for e in enrollments if e.completed])
-    
-    # Calculate average progress
-    if total_enrollments > 0:
-        total_progress = sum(e.progress for e in enrollments)
-        average_progress = total_progress / total_enrollments
-    else:
-        average_progress = 0
-    
-    context = {
-        'enrollments': enrollments,
-        'total_enrollments': total_enrollments,
-        'completed_count': completed_count,
-        'average_progress': average_progress,
-    }
-    return render(request, 'courses/my_courses.html', context)
 
 
-@login_required
-def lesson_view(request, course_slug, lesson_id):
-    """View a specific lesson"""
-    course = get_object_or_404(Course, slug=course_slug)
-    lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
-    
-    # Check enrollment
-    try:
-        enrollment = Enrollment.objects.get(user=request.user, course=course)
-    except Enrollment.DoesNotExist:
-        messages.error(request, 'You must enroll in this course first.')
-        return redirect('course_detail', slug=course_slug)
-    
-    # Get or create lesson progress
-    progress, created = LessonProgress.objects.get_or_create(
-        enrollment=enrollment,
-        lesson=lesson
-    )
-    
-    # Get all published lessons for navigation
-    all_lessons_raw = list(course.lessons.all())
-    all_lessons = [l for l in all_lessons_raw if l.is_published]
-    all_lessons.sort(key=lambda l: l.order)
-    
-    context = {
-        'course': course,
-        'lesson': lesson,
-        'progress': progress,
-        'all_lessons': all_lessons,
-        'enrollment': enrollment,
-    }
-    return render(request, 'courses/lesson_view.html', context)
+        return context
 
 
-@login_required
-def mark_lesson_complete(request, course_slug, lesson_id):
-    """Mark a lesson as complete"""
+    def get_queryset(self):                                   #currently not requires
+        # For now, let any logged-in user see any lesson.
+        # You can add security here later if you want.
+        return Lesson.objects.all()
+
+
+@login_required  # 1. Checks if user is logged in
+def mark_lesson_complete(request, pk):                      #this whole thing creates the username and the lesson he completed in the DB
+    # 3. Safety check: only run on a button click
     if request.method == 'POST':
-        course = get_object_or_404(Course, slug=course_slug)
-        lesson = get_object_or_404(Lesson, id=lesson_id, course=course)
-        
-        try:
-            enrollment = Enrollment.objects.get(user=request.user, course=course)
-            progress, created = LessonProgress.objects.get_or_create(
-                enrollment=enrollment,
-                lesson=lesson
-            )
-            
-            if not progress.completed:
-                from django.utils import timezone
-                progress.completed = True
-                progress.completed_at = timezone.now()
-                progress.save()
-                
-                # Update overall course progress - avoid boolean filter
-                all_lessons = list(course.lessons.all())
-                total_lessons = len([l for l in all_lessons if l.is_published])
-                
-                all_progress = list(LessonProgress.objects.filter(enrollment=enrollment))
-                completed_lessons = len([p for p in all_progress if p.completed])
-                
-                if total_lessons > 0:
-                    enrollment.progress = (completed_lessons / total_lessons) * 100
-                    enrollment.save()
-                
-                messages.success(request, f'Lesson "{lesson.title}" marked as complete!')
-            else:
-                messages.info(request, 'Lesson already completed.')
-                
-        except Enrollment.DoesNotExist:
-            messages.error(request, 'You must enroll in this course first.')
-    
-    return redirect('lesson_view', course_slug=course_slug, lesson_id=lesson_id)
+        # 4. Get the user and the lesson
+        user = request.user
+        lesson = get_object_or_404(Lesson, pk=pk)
+
+        # 5. The "magic" command:
+        LessonProgress.objects.get_or_create(user_link=user, lesson_link=lesson)
+
+    # 6. The "Go Back" command:
+    # This runs *after* the POST or if it's a GET
+    return redirect('courses:lesson_detail', pk=pk)

@@ -220,11 +220,8 @@ body.has-sidebar {
         <a href="{% url 'sample_home' %}" {% if request.resolver_match.url_name == 'sample_home' %}class="active"{% endif %}>
             <i class="fas fa-home"></i> Dashboard
         </a>
-        <a href="{% url 'course_list' %}" {% if request.resolver_match.url_name == 'course_list' %}class="active"{% endif %}>
+        <a href="{% url 'courses:course_list' %}" {% if request.resolver_match.url_name == 'course_list' %}class="active"{% endif %}>
             <i class="fas fa-book"></i> Courses
-        </a>
-        <a href="{% url 'my_courses' %}" {% if request.resolver_match.url_name == 'my_courses' %}class="active"{% endif %}>
-            <i class="fas fa-graduation-cap"></i> My Courses
         </a>
         <a href="{% url 'schedule:task_list' %}" {% if request.resolver_match.url_name == 'task_list' %}class="active"{% endif %}>
             <i class="fas fa-tasks"></i> Tasks
