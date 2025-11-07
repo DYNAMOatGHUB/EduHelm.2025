@@ -8,23 +8,52 @@ pip install -r requirements.txt
 # Database migration strategy for Render deployment
 echo "Handling migrations..."
 
-# Check if we have migration inconsistency and fix it
-# This script handles the case where users.0003 was applied before courses.0001
-if python manage.py showmigrations users | grep -q "\[X\] 0003_auto_20251031_1412"; then
-    echo "Detected migration inconsistency. Fixing..."
-    
-    # Unapply users migrations that depend on courses
-    python manage.py migrate users 0002_rename_profiole_profile --fake || true
-    
-    # Now apply courses migrations first
-    python manage.py migrate courses || true
-    
-    # Then apply all migrations
-    python manage.py migrate
-else
-    # Normal migration flow
-    python manage.py migrate
-fi
+# Create a Python script to fix migration inconsistency directly in the database
+python << 'END_PYTHON'
+import os
+import django
+
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project_1.settings')
+django.setup()
+
+from django.db import connection
+
+try:
+    with connection.cursor() as cursor:
+        # Check if users.0003 is in the migration table
+        cursor.execute(
+            "SELECT id FROM django_migrations WHERE app='users' AND name='0003_auto_20251031_1412'"
+        )
+        users_003_exists = cursor.fetchone()
+        
+        # Check if courses.0001 is in the migration table
+        cursor.execute(
+            "SELECT id FROM django_migrations WHERE app='courses' AND name='0001_initial'"
+        )
+        courses_001_exists = cursor.fetchone()
+        
+        if users_003_exists and not courses_001_exists:
+            print("Detected migration inconsistency. Fixing by removing users.0003 from history...")
+            # Remove the problematic migration from history
+            cursor.execute(
+                "DELETE FROM django_migrations WHERE app='users' AND name='0003_auto_20251031_1412'"
+            )
+            cursor.execute(
+                "DELETE FROM django_migrations WHERE app='users' AND name='0004_studyschedule'"
+            )
+            cursor.execute(
+                "DELETE FROM django_migrations WHERE app='users' AND name='0005_alter_badge_id_alter_discussion_id_and_more'"
+            )
+            print("Removed problematic migration records. Will reapply them with correct dependency order.")
+        else:
+            print("No migration inconsistency detected or already fixed.")
+            
+except Exception as e:
+    print(f"Could not check/fix migrations (this is OK if first deployment): {e}")
+END_PYTHON
+
+# Now run migrations normally
+python manage.py migrate
 
 # Collect static files
 python manage.py collectstatic --no-input
