@@ -5,13 +5,26 @@ set -o errexit
 # Install dependencies
 pip install -r requirements.txt
 
-# Delete old database if exists (fresh start for schema changes)
-echo "Cleaning up old database..."
-rm -f db.sqlite3
+# Database migration strategy for Render deployment
+echo "Handling migrations..."
 
-# Run database migrations (SQLite)
-echo "Running migrations..."
-python manage.py migrate
+# Check if we have migration inconsistency and fix it
+# This script handles the case where users.0003 was applied before courses.0001
+if python manage.py showmigrations users | grep -q "\[X\] 0003_auto_20251031_1412"; then
+    echo "Detected migration inconsistency. Fixing..."
+    
+    # Unapply users migrations that depend on courses
+    python manage.py migrate users 0002_rename_profiole_profile --fake || true
+    
+    # Now apply courses migrations first
+    python manage.py migrate courses || true
+    
+    # Then apply all migrations
+    python manage.py migrate
+else
+    # Normal migration flow
+    python manage.py migrate
+fi
 
 # Collect static files
 python manage.py collectstatic --no-input
